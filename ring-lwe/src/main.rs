@@ -2,14 +2,17 @@ use polynomial_ring::Polynomial;
 use serde_json::json;
 use ring_lwe::{parameters, polymul, polyadd, gen_binary_poly, gen_uniform_poly, gen_normal_poly};
 
-fn keygen(size: usize, modulus: i64, poly_mod: Polynomial<i64>) -> (Vec<Polynomial<i64>>, Polynomial<i64>) {
+fn keygen(size: usize, modulus: i64, poly_mod: Polynomial<i64>) -> ([Polynomial<i64>; 2], Polynomial<i64>) {
     // Generate a public and secret key
     let sk = gen_binary_poly(size);
     let a = gen_uniform_poly(size, modulus);
     let e = gen_normal_poly(size);
     let b = polyadd(polymul(-a.clone(), sk.clone(), modulus, poly_mod.clone()), -e, modulus, poly_mod);
-    (vec![b, a], sk) // Return public key (b, a) and secret key (sk)
+    
+    // Return public key (b, a) as an array and secret key (sk)
+    ([b, a], sk)  // Using an array instead of a Vec
 }
+
 
 fn main() {
     // Encryption scheme parameters
