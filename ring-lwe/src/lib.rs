@@ -1,4 +1,4 @@
-use polynomial_ring::{Polynomial, polynomial};
+use polynomial_ring::Polynomial;
 use num_traits::pow;
 use rand_distr::{Uniform, Normal, Distribution};
 
@@ -9,7 +9,7 @@ pub fn parameters() -> (usize, usize, usize, Polynomial<i64>) {
     let q = pow(2,15);
     // plaintext modulus
     let t = pow(2,8);
-    // polynomial modulus
+    // polynomial modulus x^n+1
 	let mut poly_vec = vec![0i64;n+1];
 	poly_vec[0] = 1;
 	poly_vec[n] = 1;
@@ -62,7 +62,7 @@ pub fn polyadd(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod
 
 pub fn polyinv(x : Polynomial<i64>, modulus: i64) -> Polynomial<i64> {
   //Additive inverse of polynomial x modulo modulus
-  let mut y = -x;
+  let y = -x;
   mod_coeffs(y, modulus)
 }
 

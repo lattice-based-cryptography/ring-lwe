@@ -1,19 +1,31 @@
-use ring_lwe::*; // Import your library
+use polynomial_ring::Polynomial;
+use serde_json::json;
+use ring_lwe::{parameters, polymul, polyadd, gen_binary_poly, gen_uniform_poly, gen_normal_poly};
+
+fn keygen(size: usize, modulus: i64, poly_mod: Polynomial<i64>) -> (Vec<Polynomial<i64>>, Polynomial<i64>) {
+    // Generate a public and secret key
+    let sk = gen_binary_poly(size);
+    let a = gen_uniform_poly(size, modulus);
+    let e = gen_normal_poly(size);
+    let b = polyadd(polymul(-a.clone(), sk.clone(), modulus, poly_mod.clone()), -e, modulus, poly_mod);
+    (vec![b, a], sk) // Return public key (b, a) and secret key (sk)
+}
 
 fn main() {
-    // Retrieve parameters
-    let (n, q, t, poly_mod) = parameters();
-    println!("Parameters: n = {}, q = {}, t = {}, poly_mod = {:?}", n, q, t, poly_mod);
+    // Encryption scheme parameters
+    let (n, q, _t, poly_mod) = parameters();
 
-    // Generate and print a binary polynomial
-    let binary_poly = gen_binary_poly(n);
-    println!("Binary polynomial: {:?}", binary_poly);
+    // Keygen: Convert n and q from usize to i64
+    let (pk, sk) = keygen(n, q.try_into().unwrap(), poly_mod);
+    
+    // Convert keys to vector of integers
+    let keys = json!({
+        "secret": sk.coeffs(),
+        "public_b": pk[0].coeffs(),
+        "public_a": pk[1].coeffs()
+    });
 
-    // Generate and print a uniform polynomial
-    let uniform_poly = gen_uniform_poly(n, q as i64);
-    println!("Uniform polynomial: {:?}", uniform_poly);
-
-    // Generate and print a normal polynomial
-    let normal_poly = gen_normal_poly(n);
-    println!("Normal polynomial: {:?}", normal_poly);
+    // Print keys in JSON format
+    println!("{}", serde_json::to_string(&keys).unwrap());
 }
+
