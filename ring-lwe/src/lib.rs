@@ -2,7 +2,7 @@ use polynomial_ring::{Polynomial, polynomial};
 use num_traits::pow;
 use rand_distr::{Uniform, Normal, Distribution};
 
-fn parameters() -> (usize, usize, usize, Polynomial<i64>) {
+pub fn parameters() -> (usize, usize, usize, Polynomial<i64>) {
 	// polynomial modulus degree
 	let n = pow(2,4);
 	// ciphertext modulus
@@ -32,7 +32,7 @@ fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
 	Polynomial::new(newcoeffs)
 }
 
-fn polymul(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
+pub fn polymul(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
     //Multiply two polynoms
     //Args:
     //	x, y: two polynoms to be multiplied.
@@ -46,7 +46,7 @@ fn polymul(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : P
 	mod_coeffs(r, modulus)
 }
 
-fn polyadd(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
+pub fn polyadd(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
     //Add two polynoms
     //Args:
     //	x, y: two polynoms to be added.
@@ -60,13 +60,13 @@ fn polyadd(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : P
 	mod_coeffs(r, modulus)
 }
 
-fn polyinv(x : Polynomial<i64>, modulus: i64) -> Polynomial<i64> {
+pub fn polyinv(x : Polynomial<i64>, modulus: i64) -> Polynomial<i64> {
   //Additive inverse of polynomial x modulo modulus
   let mut y = -x;
   mod_coeffs(y, modulus)
 }
 
-fn polysub(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
+pub fn polysub(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
     //Subtract two polynoms
     //Args:
     //	x, y: two polynoms to be added.
@@ -77,7 +77,7 @@ fn polysub(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : P
 	polyadd(x, polyinv(y, modulus), modulus, poly_mod)
 }
 
-fn gen_binary_poly(size : usize) -> Polynomial<i64> {
+pub fn gen_binary_poly(size : usize) -> Polynomial<i64> {
     //Generates a polynomial with coeffecients in [0, 1]
     //Args:
     //	size: number of coeffcients
@@ -92,7 +92,7 @@ fn gen_binary_poly(size : usize) -> Polynomial<i64> {
 	Polynomial::new(coeffs)
 }
 
-fn gen_uniform_poly(size: usize, modulus: i64) -> Polynomial<i64> {
+pub fn gen_uniform_poly(size: usize, modulus: i64) -> Polynomial<i64> {
     //Generates a polynomial with coeffecients being integers in Z_modulus
     //Args:
     //	size: number of coeffcients
@@ -107,7 +107,7 @@ fn gen_uniform_poly(size: usize, modulus: i64) -> Polynomial<i64> {
 	Polynomial::new(coeffs)
 }
 
-fn gen_normal_poly(size: usize) -> Polynomial<i64> {
+pub fn gen_normal_poly(size: usize) -> Polynomial<i64> {
     //Generates a polynomial with coeffecients in a normal distribution
     //of mean 0 and a standard deviation of 2, then discretize it.
     //Args:
