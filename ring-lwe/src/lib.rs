@@ -17,7 +17,7 @@ pub fn parameters() -> (usize, usize, usize, Polynomial<i64>) {
     return (n,q,t,poly_mod)
 }
 
-fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
+pub fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
 	//Take remainder of the coefficients of a polynom by a given modulus
 	//Args:
 	//	x: polynom
@@ -32,7 +32,7 @@ fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
 	Polynomial::new(newcoeffs)
 }
 
-pub fn polymul(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
+pub fn polymul(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : &Polynomial<i64>) -> Polynomial<i64> {
     //Multiply two polynoms
     //Args:
     //	x, y: two polynoms to be multiplied.
@@ -42,11 +42,11 @@ pub fn polymul(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod
     //	polynomial in Z_modulus[X]/(poly_mod).
 	let mut r = x*y;
 	r = mod_coeffs(r, modulus);
-	r.division(&poly_mod);
+	r.division(poly_mod);
 	mod_coeffs(r, modulus)
 }
 
-pub fn polyadd(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
+pub fn polyadd(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : &Polynomial<i64>) -> Polynomial<i64> {
     //Add two polynoms
     //Args:
     //	x, y: two polynoms to be added.
@@ -56,7 +56,7 @@ pub fn polyadd(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod
     //	polynomial in Z_modulus[X]/(poly_mod).
 	let mut r = x+y;
 	r = mod_coeffs(r, modulus);
-	r.division(&poly_mod);
+	r.division(poly_mod);
 	mod_coeffs(r, modulus)
 }
 
@@ -74,7 +74,7 @@ pub fn polysub(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod
     //	poly_mod: polynomial modulus.
     //Returns:
     //	polynomial in Z_modulus[X]/(poly_mod).
-	polyadd(x, polyinv(y, modulus), modulus, poly_mod)
+	polyadd(x, polyinv(y, modulus), modulus, &poly_mod)
 }
 
 pub fn gen_binary_poly(size : usize) -> Polynomial<i64> {
