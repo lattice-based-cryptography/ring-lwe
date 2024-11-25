@@ -13,25 +13,25 @@ fn keygen(size: usize, modulus: i64, poly_mod: Polynomial<i64>) -> ([Polynomial<
     ([b, a], sk)  // Using an array instead of a Vec
 }
 
-fn encrypt(pk: [Polynomial<i64>; 2], size: usize, q: i64, t: i64, poly_mod: Polynomial<i64>, pt: &[i64]) -> [Polynomial<i64>; 2] {
-    //Encrypt an integer or list of integers.
+fn encrypt(pk: [Polynomial<i64>; 2], size: usize, q: i64, t: i64, poly_mod: Polynomial<i64>, pt: Vec<i64>) -> [Polynomial<i64>; 2] {
+    //Encrypt an integer or list of integers
     //Args:
-    //	pk: public-key.
-    //	size: size of polynomials.
-    //	q: ciphertext modulus.
-    //	t: plaintext modulus.
-    //	poly_mod: polynomial modulus.
-    //	pt: array to be encrypted.
+    //	pk: public-key
+    //	size: size of polynomials
+    //	q: ciphertext modulus
+    //	t: plaintext modulus
+    //	poly_mod: polynomial modulus
+    //	pt: array to be encrypted
     //Returns:
-    //	Tuple representing a ciphertext.
+    //	Array representing a ciphertext
 	
     //encode pt into a plaintext polynomial if pt is an int, otherwise encode as a full polynomial
-	let mut m = Vec::from(pt);
+	let mut m = pt;
 	m.resize(size, 0);
     let delta = q / t;
     let mut scaled_m = vec![0i64;size];
 	for i in 0..size {
-		scaled_m[i] = delta*scaled_m[i] % q
+		scaled_m[i] = delta*m[i] % q;
 	}
 	let scaled_m_poly = Polynomial::new(scaled_m);
     let e1 = gen_normal_poly(size);
@@ -50,6 +50,29 @@ fn encrypt(pk: [Polynomial<i64>; 2], size: usize, q: i64, t: i64, poly_mod: Poly
 	[ct0, ct1]
 }
 
+fn decrypt(sk: Polynomial<i64>, size: usize, q: i64, t: i64, poly_mod: Polynomial<i64>, ct: [Polynomial<i64>;2]) -> Vec<i64> {
+    //Decrypt a ciphertext
+    //Args:
+		//sk: secret-key
+        //size: size of polynomials
+        //q: ciphertext modulus
+        //t: plaintext modulus
+        //poly_mod: polynomial modulus
+        //ct: ciphertext array
+    //Returns:
+        //Array representing the plaintext
+    let scaled_pt = polyadd(
+            polymul(ct[1].clone(), sk, q, poly_mod.clone()),
+            ct[0].clone(), q, poly_mod.clone()
+        );
+	let mut pt = vec![];
+	let mut s = 0f64;
+	for i in 0..size {
+		s = scaled_pt.coeffs()[i] as f64 * t as f64 / q as f64;
+		pt.push(s.round() as i64 % t);
+	}
+    pt
+}
 
 fn main() {
     // Encryption scheme parameters
@@ -57,6 +80,9 @@ fn main() {
 
     // Keygen: Convert q from usize to i64
     let (pk, sk) = keygen(n, q.try_into().unwrap(), poly_mod.clone());
+	
+	let ct = encrypt(pk.clone(), n, q.try_into().unwrap(), t.try_into().unwrap(), poly_mod.clone(), vec![2,4,5,6]);
+	let pt = decrypt(sk.clone(), n, q.try_into().unwrap(), t.try_into().unwrap(), poly_mod.clone(), ct);
     
     // Convert keys to vector of integers
     let keys = json!({
@@ -67,5 +93,6 @@ fn main() {
 
     // Print keys in JSON format
     println!("{}", serde_json::to_string(&keys).unwrap());
+	println!("{:?}", pt);
 }
 

@@ -114,11 +114,11 @@ pub fn gen_normal_poly(size: usize) -> Polynomial<i64> {
     //	size: number of coeffcients,
     //Returns:
     //	polynomial of degree size-1
-	let normal = Normal::new(0.0,2.0).unwrap();
+	let normal = Normal::new(0.0f64,2.0f64).unwrap();
 	let mut rng = rand::thread_rng();
     let mut coeffs = vec![0i64;size];
 	for i in 0..size {
-		coeffs[i] = normal.sample(&mut rng) as i64;
+		coeffs[i] = normal.sample(&mut rng).round() as i64;
 	}
 	Polynomial::new(coeffs)
 }
