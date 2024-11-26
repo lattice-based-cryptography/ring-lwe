@@ -1,8 +1,10 @@
 mod keygen;
 mod encrypt;
+mod decrypt;
 
 use crate::keygen::keygen;
 use crate::encrypt::encrypt;
+use crate::decrypt::decrypt;
 use ring_lwe::parameters;
 use serde_json::json;
 
