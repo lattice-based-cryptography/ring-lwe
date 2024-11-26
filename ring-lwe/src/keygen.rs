@@ -9,5 +9,5 @@ pub fn keygen(size: usize, modulus: i64, poly_mod: &Polynomial<i64>) -> ([Polyno
     let b = polyadd(polymul(-a.clone(), sk.clone(), modulus, &poly_mod), -e, modulus, &poly_mod);
     
     // Return public key (b, a) as an array and secret key (sk)
-    ([b, a], sk)  // Using an array instead of a Vec
+    ([b, a], sk)
 }

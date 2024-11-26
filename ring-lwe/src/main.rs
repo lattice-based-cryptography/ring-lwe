@@ -13,27 +13,31 @@ use std::env;
 use polynomial_ring::Polynomial;
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
+    let method = &args[1]; //get the method: keygen, encrypt, decrypt
+
     // Encryption scheme parameters
     let (n, q, t, poly_mod) = parameters();
 
-    // Keygen: Convert n and q from usize to i64
-    let (pk, sk) = keygen(n, q.try_into().unwrap(), &poly_mod);
-    
-    // Convert keys to vector of integers
-    let keys = json!({
-        "secret": sk.coeffs(),
-        "public_b": pk[0].coeffs(),
-        "public_a": pk[1].coeffs()
-    });
+    if method == "keygen" {
+        // Keygen: Convert n and q from usize to i64
+        let (pk, sk) = keygen(n, q.try_into().unwrap(), &poly_mod);
+        let mut pub_key: Vec<i64> = Vec::with_capacity(2*n);
+        pub_key.extend(pk[0].coeffs());
+        pub_key.extend(pk[1].coeffs());
+        // Convert keys to vector of integers
+        let keys = json!({
+            "secret": sk.coeffs(),
+            "public": pub_key
+        });
+        // Print keys in JSON format
+        println!("{}", serde_json::to_string(&keys).unwrap());
+    }
 
-    // Print keys in JSON format
-    println!("{}", serde_json::to_string(&keys).unwrap());
-
-    let args: Vec<String> = env::args().collect();
-
-    if args.len() > 2 {
+    //encrypt given public key and message as args
+    if method == "encrypt" {
         // Get the public key from the string and format as two Polynomials
-        let pk_string = &args[1];
+        let pk_string = &args[2];
         let pk_arr: Vec<i64> = pk_string
             .split(',')
             .filter_map(|x| x.parse::<i64>().ok())
@@ -44,7 +48,7 @@ fn main() {
         let pk = [pk_b, pk_a];
 
         // Define the integers to be encrypted
-        let message = &args[2];
+        let message = &args[3];
         let message_bytes: Vec<String> = message
             .bytes()
             .map(|byte| format!("{:b}", byte))
@@ -76,6 +80,51 @@ fn main() {
             .collect::<Vec<String>>()
             .join(",");
         println!("{}", ciphertext_string);
+    }
+
+    if method == "decrypt" {
+        //get the secret key and format as polynomial
+        let sk_string = &args[2];
+        let sk_coeffs: Vec<i64> = sk_string
+            .split(',')
+            .filter_map(|x| x.parse::<i64>().ok())
+            .collect();
+        let sk = Polynomial::new(sk_coeffs);
+
+        // Get the ciphertext to be decrypted
+        let ciphertext_string = &args[3];
+        let ciphertext_array: Vec<i64> = ciphertext_string
+        .split(',')
+        .map(|s| s.parse::<i64>().unwrap())
+        .collect();
+
+        let num_bytes = ciphertext_array.len() / (2 * n);
+        let mut decrypted_message = String::new();
+
+        for i in 0..num_bytes {
+            let c0 = Polynomial::new(ciphertext_array[2 * i * n..(2 * i + 1) * n].to_vec());
+            let c1 = Polynomial::new(ciphertext_array[(2 * i + 1) * n..(2 * i + 2) * n].to_vec());
+            let ct = [c0, c1];
+
+            // Decrypt the ciphertext
+            let decrypted_poly = decrypt(sk.clone(), n, q.try_into().unwrap(), t.try_into().unwrap(), &poly_mod, ct);
+
+            // Print the secret key's coefficients
+            println!("Decrypted poly: {:?}", decrypted_poly.coeffs());
+
+            // Convert the coefficients to characters and append to the message
+            decrypted_message.push_str(
+                &decrypted_poly
+                    .coeffs()
+                    .iter()
+                    .map(|&coeff| coeff as u8 as char)
+                    .collect::<String>(),
+            );
+        }
+
+        // Print the decrypted message
+        println!("{}", decrypted_message);
+        
     }
 
 }
