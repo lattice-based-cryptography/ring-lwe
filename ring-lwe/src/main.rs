@@ -113,9 +113,6 @@ fn main() {
             // Decrypt the ciphertext
             let decrypted_poly = decrypt(sk.clone(), n, q.try_into().unwrap(), t.try_into().unwrap(), &poly_mod, ct);
 
-            // Print the secret key's coefficients
-            println!("Decrypted poly: {:?}", decrypted_poly.coeffs());
-
             // Convert the coefficients to characters and append to the message
             decrypted_message.push_str(
                 &decrypted_poly
