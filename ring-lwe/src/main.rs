@@ -14,7 +14,11 @@ use polynomial_ring::Polynomial;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let method = &args[1]; //get the method: keygen, encrypt, decrypt
+    let method = if args.len() > 1 {
+        &args[1]
+    } else {
+        ""
+    };
 
     // Encryption scheme parameters
     let (n, q, t, poly_mod) = parameters();
