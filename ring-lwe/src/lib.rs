@@ -32,7 +32,7 @@ pub fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
 	Polynomial::new(newcoeffs)
 }
 
-pub fn polymul(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : &Polynomial<i64>) -> Polynomial<i64> {
+pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_mod : &Polynomial<i64>) -> Polynomial<i64> {
     //Multiply two polynoms
     //Args:
     //	x, y: two polynoms to be multiplied.
@@ -46,7 +46,7 @@ pub fn polymul(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod
 	mod_coeffs(r, modulus)
 }
 
-pub fn polyadd(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : &Polynomial<i64>) -> Polynomial<i64> {
+pub fn polyadd(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_mod : &Polynomial<i64>) -> Polynomial<i64> {
     //Add two polynoms
     //Args:
     //	x, y: two polynoms to be added.
@@ -60,13 +60,13 @@ pub fn polyadd(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod
 	mod_coeffs(r, modulus)
 }
 
-pub fn polyinv(x : Polynomial<i64>, modulus: i64) -> Polynomial<i64> {
+pub fn polyinv(x : &Polynomial<i64>, modulus: i64) -> Polynomial<i64> {
   //Additive inverse of polynomial x modulo modulus
   let y = -x;
   mod_coeffs(y, modulus)
 }
 
-pub fn polysub(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
+pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
     //Subtract two polynoms
     //Args:
     //	x, y: two polynoms to be added.
@@ -74,7 +74,7 @@ pub fn polysub(x : Polynomial<i64>, y : Polynomial<i64>, modulus : i64, poly_mod
     //	poly_mod: polynomial modulus.
     //Returns:
     //	polynomial in Z_modulus[X]/(poly_mod).
-	polyadd(x, polyinv(y, modulus), modulus, &poly_mod)
+	polyadd(x, &polyinv(y, modulus), modulus, &poly_mod)
 }
 
 pub fn gen_binary_poly(size : usize) -> Polynomial<i64> {

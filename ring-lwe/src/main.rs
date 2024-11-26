@@ -72,7 +72,7 @@ fn main() {
         // Encrypt each integer message block
         let mut ciphertext_list: Vec<i64> = Vec::new();
         for message_block in message_blocks {
-            let ciphertext = encrypt(pk.clone(), n, q.try_into().unwrap(), t.try_into().unwrap(), &poly_mod, message_block);
+            let ciphertext = encrypt(&pk, n, q.try_into().unwrap(), t.try_into().unwrap(), &poly_mod, &message_block);
             ciphertext_list.extend(ciphertext.0.coeffs());
             ciphertext_list.extend(ciphertext.1.coeffs());
         }
@@ -111,7 +111,7 @@ fn main() {
             let ct = [c0, c1];
 
             // Decrypt the ciphertext
-            let decrypted_poly = decrypt(sk.clone(), n, q.try_into().unwrap(), t.try_into().unwrap(), &poly_mod, ct);
+            let decrypted_poly = decrypt(&sk, n, q.try_into().unwrap(), t.try_into().unwrap(), &poly_mod, &ct);
 
             // Convert the coefficients to characters and append to the message
             decrypted_message.push_str(
