@@ -3,7 +3,7 @@ Lattice-based encryption methods (ring-LWE, module-LWE) in pure Rust.
 
 This provides the basic keygen, encryption, and decryption operations for the ring learning with errors scheme.
 
-**Disclaimer**: The parameters are set to small value. As set, this is not secure. This is intended for educational, not real world use.
+**Disclaimer**: The parameters are set to small values. This is not secure. This is intended for educational, not real world use.
 
 **See**: [open-encrypt](https://github.com/jacksonwalters/open-encrypt)
 
