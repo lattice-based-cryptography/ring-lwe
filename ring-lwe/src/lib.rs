@@ -25,11 +25,16 @@ pub fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
 	//Returns:
 	//	polynomial in Z_modulus[X]
 	let coeffs = x.coeffs();
-	let mut newcoeffs = vec![coeffs[0].rem_euclid(modulus)];
-	for i in 1..coeffs.len() {
-		newcoeffs.push(coeffs[i].rem_euclid(modulus));
+	let mut newcoeffs = vec![];
+	if coeffs.len() == 0 {
+		// return original input for the zero polynomial
+		x
+	} else {
+		for i in 0..coeffs.len() {
+			newcoeffs.push(coeffs[i].rem_euclid(modulus));
+		}
+		Polynomial::new(newcoeffs)
 	}
-	Polynomial::new(newcoeffs)
 }
 
 pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_mod : &Polynomial<i64>) -> Polynomial<i64> {
