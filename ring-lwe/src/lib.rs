@@ -84,7 +84,7 @@ pub fn gen_binary_poly(size : usize) -> Polynomial<i64> {
     //Returns:
     //	polynomial of degree size-1
 	let between = Uniform::new(0,2);
-	let mut rng = rand::thread_rng();
+    let mut rng = rand::thread_rng();
     let mut coeffs = vec![0i64;size];
 	for i in 0..size {
 		coeffs[i] = between.sample(&mut rng);
