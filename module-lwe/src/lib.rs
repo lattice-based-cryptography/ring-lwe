@@ -1,8 +1,8 @@
 use polynomial_ring::Polynomial;
 use num_traits::pow;
-use rand_distr::{Uniform, Normal, Distribution};
+use rand_distr::{Uniform, Distribution};
 mod ring_mod;
-use ring_mod::{polymul, polyadd};
+use ring_mod::{polyadd, polymul, gen_uniform_poly};
 
 pub fn parameters() -> (usize, usize, usize, Polynomial<i64>) {
 	// polynomial modulus degree
@@ -56,6 +56,8 @@ pub fn mul_mat_vec_simple(m: &Vec<Vec<Polynomial<i64>>>, v: &Vec<Polynomial<i64>
 }
 
 pub fn transpose(m: &Vec<Vec<Polynomial<i64>>>) -> Vec<Vec<Polynomial<i64>>> {
+	//take the transpose of a matrix of polynomials
+	
 	let mut result = vec![vec![Polynomial::new(vec![]); m.len()]; m[0].len()];
 	for i in 0..m.len() {
 		for j in 0..m[0].len() {
@@ -64,3 +66,34 @@ pub fn transpose(m: &Vec<Vec<Polynomial<i64>>>) -> Vec<Vec<Polynomial<i64>>> {
 	}
 	result
 }
+
+pub fn gen_small_vector(size : usize, rank: usize) -> Vec<Polynomial<i64>> {
+	//generates a vector of given rank of degree size-1 polynomials
+	//with coefficients in [-1,0,1]
+	
+	let mut v = vec![];
+	let between = Uniform::new(0,3);
+    let mut rng = rand::thread_rng();
+    let mut coeffs = vec![0i64;size];
+	for _i in 0..rank {
+		for j in 0.. size {
+			coeffs[j] = between.sample(&mut rng)-1;
+		}
+		v.push(Polynomial::new(coeffs.clone()));
+	}
+	v
+}
+
+pub fn gen_uniform_matrix(size : usize, rank: usize, modulus: i64) -> Vec<Vec<Polynomial<i64>>> {
+	//generates a rank by rank matrix of degree size-1 polynomials
+	//with uniform coefficients in Z_modulus
+	
+	let mut m = vec![vec![Polynomial::new(vec![]); rank]; rank];
+	for i in 0..rank {
+		for j in 0..rank {
+			m[i][j] = gen_uniform_poly(size, modulus);
+		}
+	}
+	m
+}
+	
