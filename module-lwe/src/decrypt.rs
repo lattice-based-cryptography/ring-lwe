@@ -14,7 +14,6 @@ pub fn decrypt(
 	
 	//Compute v-sk*u mod q
 	let scaled_pt = polysub(&v, &mul_vec_simple(&sk, &u, q, &poly_mod), q, &poly_mod);
-	println!("{:?}", scaled_pt.coeffs());
 	let half_q = q/2+1;
 	let mut decrypted_coeffs = vec![];
 	let mut s;
