@@ -1,21 +1,5 @@
 use polynomial_ring::Polynomial;
-use num_traits::pow;
-use rand_distr::{Uniform, Normal, Distribution};
-
-pub fn parameters() -> (usize, usize, usize, Polynomial<i64>) {
-	// polynomial modulus degree
-	let n = pow(2,4);
-	// ciphertext modulus
-    let q = pow(2,15);
-    // plaintext modulus
-    let t = pow(2,8);
-    // polynomial modulus x^n+1
-	let mut poly_vec = vec![0i64;n+1];
-	poly_vec[0] = 1;
-	poly_vec[n] = 1;
-    let poly_mod = Polynomial::new(poly_vec);
-    return (n,q,t,poly_mod)
-}
+use rand_distr::{Uniform, Distribution};
 
 pub fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
 	//Take remainder of the coefficients of a polynom by a given modulus
@@ -81,21 +65,6 @@ pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_m
 	polyadd(x, &polyinv(y, modulus), modulus, poly_mod)
 }
 
-pub fn gen_binary_poly(size : usize) -> Polynomial<i64> {
-    //Generates a polynomial with coeffecients in [0, 1]
-    //Args:
-    //	size: number of coeffcients
-    //Returns:
-    //	polynomial of degree size-1
-	let between = Uniform::new(0,2);
-    let mut rng = rand::thread_rng();
-    let mut coeffs = vec![0i64;size];
-	for i in 0..size {
-		coeffs[i] = between.sample(&mut rng);
-	}
-	Polynomial::new(coeffs)
-}
-
 pub fn gen_uniform_poly(size: usize, modulus: i64) -> Polynomial<i64> {
     //Generates a polynomial with coeffecients being integers in Z_modulus
     //Args:
@@ -107,22 +76,6 @@ pub fn gen_uniform_poly(size: usize, modulus: i64) -> Polynomial<i64> {
     let mut coeffs = vec![0i64;size];
 	for i in 0..size {
 		coeffs[i] = between.sample(&mut rng);
-	}
-	Polynomial::new(coeffs)
-}
-
-pub fn gen_normal_poly(size: usize) -> Polynomial<i64> {
-    //Generates a polynomial with coeffecients in a normal distribution
-    //of mean 0 and a standard deviation of 2, then discretize it.
-    //Args:
-    //	size: number of coeffcients,
-    //Returns:
-    //	polynomial of degree size-1
-	let normal = Normal::new(0.0 as f64, 2.0 as f64).unwrap();
-	let mut rng = rand::thread_rng();
-    let mut coeffs = vec![0i64;size];
-	for i in 0..size {
-		coeffs[i] = normal.sample(&mut rng).round() as i64;
 	}
 	Polynomial::new(coeffs)
 }
