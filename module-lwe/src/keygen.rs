@@ -13,6 +13,6 @@ pub fn keygen(
     let e = gen_small_vector(size, rank);
     let t = add_vec(&mul_mat_vec_simple(&a, &sk, modulus, &poly_mod), &e, modulus, &poly_mod);
     
-    //Return public key (A, t) and secret key (sk) as a 3-tuple
+    //Return public key (a, t) and secret key (sk) as a 3-tuple
     (a, t, sk)
 }

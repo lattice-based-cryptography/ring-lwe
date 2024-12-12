@@ -70,7 +70,7 @@ pub fn polyinv(x : &Polynomial<i64>, modulus: i64) -> Polynomial<i64> {
   mod_coeffs(y, modulus)
 }
 
-pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
+pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_mod : &Polynomial<i64>) -> Polynomial<i64> {
     //Subtract two polynoms
     //Args:
     //	x, y: two polynoms to be added.
@@ -78,7 +78,7 @@ pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_m
     //	poly_mod: polynomial modulus.
     //Returns:
     //	polynomial in Z_modulus[X]/(poly_mod).
-	polyadd(x, &polyinv(y, modulus), modulus, &poly_mod)
+	polyadd(x, &polyinv(y, modulus), modulus, poly_mod)
 }
 
 pub fn gen_binary_poly(size : usize) -> Polynomial<i64> {

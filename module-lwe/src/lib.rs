@@ -1,7 +1,7 @@
 use polynomial_ring::Polynomial;
 use num_traits::pow;
 use rand_distr::{Uniform, Distribution};
-mod ring_mod;
+pub mod ring_mod;
 use ring_mod::{polyadd, polymul, gen_uniform_poly};
 
 pub fn parameters() -> (usize, usize, usize, Polynomial<i64>) {
