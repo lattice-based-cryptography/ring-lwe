@@ -138,7 +138,7 @@ fn main() {
                                                          .collect();
         let block_size = (k + 1) * n;
         let num_blocks = ciphertext_list.len() / block_size;
-        
+
         let mut message_binary = vec![];
     
         for i in 0..num_blocks {
@@ -150,9 +150,10 @@ fn main() {
                                                  .map(|chunk| Polynomial::new(chunk.to_vec()))
                                                  .collect();
             let v = Polynomial::new(v_array.to_vec());
-    
+            
             // Decrypt the ciphertext
             let m_b = decrypt(&sk, q as i64, &f, &u, &v);
+            
             message_binary.extend(m_b);
         }
     

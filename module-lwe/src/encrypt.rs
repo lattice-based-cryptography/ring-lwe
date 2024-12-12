@@ -18,7 +18,7 @@ pub fn encrypt(
     // Convert binary message to polynomial
     let m = Polynomial::new(vec![half_q])*Polynomial::new(m_b);
 
-    // Compute u = A^T * r + e_1 mod q
+    // Compute u = a^T * r + e_1 mod q
     let u = add_vec(&mul_mat_vec_simple(&transpose(a), r, q, f), e1, q, f);
 
     // Compute v = t * r + e_2 - m mod q
