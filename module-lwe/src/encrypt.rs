@@ -12,7 +12,8 @@ pub fn encrypt(
     e1: &Vec<Polynomial<i64>>,
     e2: &Polynomial<i64>,
 ) -> (Vec<Polynomial<i64>>, Polynomial<i64>) {
-    let half_q = (q / 2 + 1) as i64;
+    //compute nearest integer to q/2
+    let half_q = (q as f64 / 2.0 + 0.5) as i64;
 
     // Convert binary message to polynomial
     let m = Polynomial::new(vec![half_q])*Polynomial::new(m_b);
@@ -21,9 +22,7 @@ pub fn encrypt(
     let u = add_vec(&mul_mat_vec_simple(&transpose(a), r, q, f), e1, q, f);
 
     // Compute v = t * r + e_2 - m mod q
-    let v = polysub(
-        &polyadd(&mul_vec_simple(t, r, q, f), e2, q, f),
-        &m, q, f);
+    let v = polysub(&polyadd(&mul_vec_simple(t, r, q, f), e2, q, f), &m, q, f);
 
     (u, v)
 }
