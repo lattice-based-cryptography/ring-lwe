@@ -131,9 +131,6 @@ fn main() {
         let sk: Vec<Polynomial<i64>> = sk_array.chunks(n)
                                                 .map(|chunk| Polynomial::new(chunk.to_vec()))
                                                 .collect();
-
-        // Print the resulting Vec<Polynomial<i64>>
-    println!("Converted secret key (Vec<Polynomial<i64>>): {:?}", sk);
     
         // Parse ciphertext into u and v
         let ciphertext_list: Vec<i64> = ciphertext_string.split(',')
@@ -155,7 +152,7 @@ fn main() {
             let v = Polynomial::new(v_array.to_vec());
     
             // Decrypt the ciphertext
-            let m_b = decrypt(&sk, 11, &Polynomial::new(vec![1, 0, 1]), &u, &v); // Example q and poly_mod
+            let m_b = decrypt(&sk, q, f, &u, &v);
             message_binary.extend(m_b);
         }
     
