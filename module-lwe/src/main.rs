@@ -152,7 +152,7 @@ fn main() {
             let v = Polynomial::new(v_array.to_vec());
     
             // Decrypt the ciphertext
-            let m_b = decrypt(&sk, q, f, &u, &v);
+            let m_b = decrypt(&sk, q, &f, &u, &v);
             message_binary.extend(m_b);
         }
     
