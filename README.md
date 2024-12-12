@@ -29,4 +29,7 @@ Generates the ciphertext.
 
 `cargo run -- decrypt secret_key ciphertext`
 
-Decrypts the ciphertext given a secret key specified by the coefficients of a binary polynomial, printing the plaintext message.
+Decrypts the ciphertext given a secret key, printing the plaintext message.
+
+- ring-LWE: secret key specified by the coefficients of a binary polynomial
+- module-LWE: secret key specified by vector of "small" polynomials with coefficients in {-1,0,1} 
