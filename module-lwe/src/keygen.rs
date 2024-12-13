@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use module_lwe::{parameters, add_vec, mul_mat_vec_simple, gen_small_vector, gen_uniform_matrix};
+use module_lwe::{Parameters, add_vec, mul_mat_vec_simple, gen_small_vector, gen_uniform_matrix};
 use std::collections::HashMap;
 
 pub fn keygen(
@@ -19,10 +19,10 @@ pub fn keygen(
 }
 
 //function to generate public/secret keys as key:value pairs
-pub fn keygen_string() -> HashMap<String, String> {
+pub fn keygen_string(params: &Parameters) -> HashMap<String, String> {
 
-    // Parameters and inputs
-    let (n, q, k, f) = parameters();
+    //get parameters
+    let (n, k, q, f) = (params.n, params.k, params.q, &params.f);
 
     //generate public, secret keys
     let (a,t,sk) = keygen(n,q as i64,k,&f);
@@ -53,7 +53,7 @@ pub fn keygen_string() -> HashMap<String, String> {
         .iter()
         .flat_map(|poly| {
             let mut coeffs = poly.coeffs().to_vec();
-            coeffs.resize(n, 0); // Resize to include leading zeros up to size `n`
+            coeffs.resize(params.n, 0); // Resize to include leading zeros up to size `n`
             coeffs
         })
     .collect();

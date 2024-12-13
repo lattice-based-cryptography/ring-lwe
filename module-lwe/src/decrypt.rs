@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use module_lwe::{parameters,mul_vec_simple};
+use module_lwe::{Parameters,mul_vec_simple};
 use module_lwe::ring_mod::polysub;
 
 pub fn decrypt(
@@ -29,10 +29,10 @@ pub fn decrypt(
 }
 
 //decrypt a ciphertext string given a secret key
-pub fn decrypt_string(sk_string: &String, ciphertext_string: &String) -> String {
+pub fn decrypt_string(sk_string: &String, ciphertext_string: &String, params: &Parameters) -> String {
 
-    // Parameters and inputs
-    let (n, q, k, f) = parameters();
+    //get parameters
+    let (n, k, q, f) = (params.n, params.k, params.q, &params.f);
     
     // Convert the secret key string into a Vec<Polynomial<i64>>
     let sk_array: Vec<i64> = sk_string.split(',')

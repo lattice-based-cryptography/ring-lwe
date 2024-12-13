@@ -1,6 +1,6 @@
 use polynomial_ring::Polynomial;
 use module_lwe::ring_mod::{polyadd,polysub};
-use module_lwe::{parameters, add_vec, mul_mat_vec_simple, transpose, mul_vec_simple, gen_small_vector};
+use module_lwe::{Parameters, add_vec, mul_mat_vec_simple, transpose, mul_vec_simple, gen_small_vector};
 
 pub fn encrypt(
     a: &Vec<Vec<Polynomial<i64>>>,
@@ -28,9 +28,10 @@ pub fn encrypt(
 }
 
 //function to encrypt a message given a public_key string
-pub fn encrypt_string(pk_string: &String, message_string: &String) -> String {
-    // Parameters and inputs
-    let (n, q, k, f) = parameters();
+pub fn encrypt_string(pk_string: &String, message_string: &String, params: &Parameters) -> String {
+
+    //get parameters
+    let (n, k, q, f) = (params.n, params.k, params.q, &params.f);
 
     // Randomly generated values for r, e1, and e2
     let r = gen_small_vector(n, k);
