@@ -7,6 +7,7 @@ use crate::encrypt::encrypt_string;
 use crate::decrypt::decrypt_string;
 use std::env;
 use ring_lwe::Parameters;
+use polynomial_ring::Polynomial;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -18,7 +19,11 @@ fn main() {
         if args.len() > pos + 3 {
             params.n = args.get(pos + 1).and_then(|s| s.parse().ok()).unwrap_or(params.n);
             params.q = args.get(pos + 2).and_then(|s| s.parse().ok()).unwrap_or(params.q);
-            params.k = args.get(pos + 3).and_then(|s| s.parse().ok()).unwrap_or(params.k);
+            params.t = args.get(pos + 3).and_then(|s| s.parse().ok()).unwrap_or(params.t);
+            let mut poly_vec = vec![0i64;params.n+1];
+            poly_vec[0] = 1;
+            poly_vec[params.n] = 1;
+            params.poly_mod = Polynomial::new(poly_vec);
         }
     }
 
