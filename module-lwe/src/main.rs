@@ -111,8 +111,15 @@ fn encrypt_string(pk_string: &String, message_string: &String) -> String {
     let mut ciphertext_list = vec![];
     for block in message_blocks {
         let (u, v) = encrypt(&a, &t, block, &f, q as i64, &r, &e1, &e2);
-        let u_flattened: Vec<i64> = u.iter().flat_map(|poly| poly.coeffs()).cloned().collect();
-        let v_flattened: Vec<i64> = v.coeffs().to_vec();
+        let u_flattened: Vec<i64> = u.iter()
+            .flat_map(|poly| {
+                let mut coeffs = poly.coeffs().to_vec();
+                coeffs.resize(n, 0); // Resize to include leading zeros up to size `n`
+                coeffs
+            })
+            .collect();
+        let mut v_flattened: Vec<i64> = v.coeffs().to_vec();
+        v_flattened.resize(n,0);
         ciphertext_list.extend(u_flattened);
         ciphertext_list.extend(v_flattened);
     }
@@ -157,7 +164,8 @@ fn decrypt_string(sk_string: &String, ciphertext_string: &String) -> String {
         let v = Polynomial::new(v_array.to_vec());
             
         // Decrypt the ciphertext
-        let m_b = decrypt(&sk, q as i64, &f, &u, &v);
+        let mut m_b = decrypt(&sk, q as i64, &f, &u, &v);
+        m_b.resize(n,0);
             
         message_binary.extend(m_b);
     }
