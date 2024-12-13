@@ -77,6 +77,7 @@ pub fn decrypt_string(sk_string: &String, ciphertext_string: &String, params: &P
     let message_string: String = byte_chunks.iter()
         .map(|byte| char::from_u32(i64::from_str_radix(byte, 2).unwrap() as u32).unwrap())
         .collect();
-        
-    message_string
+    
+    //trim the null characters \0 = '00000000' from the end
+    message_string.trim_end_matches('\0').to_string()
 }
