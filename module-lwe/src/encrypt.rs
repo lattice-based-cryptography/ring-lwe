@@ -60,10 +60,10 @@ pub fn encrypt_string(pk_string: &String, message_string: &String, params: &Para
         .flat_map(|byte| (0..8).rev().map(move |i| ((byte >> i) & 1) as i64))
         .collect();
 
-    // Break message into blocks
-    let num_blocks = message_binary.len() / n;
-    let message_blocks: Vec<Vec<i64>> = (0..num_blocks)
-        .map(|i| message_binary[i * n..(i + 1) * n].to_vec())
+    // Break message into blocks, including the last partial block if necessary
+    let message_blocks: Vec<Vec<i64>> = message_binary
+        .chunks(n) // Divide the binary message into chunks of size `n`
+        .map(|chunk| chunk.to_vec()) // Convert each chunk into a vector
         .collect();
 
     // Encrypt each block
