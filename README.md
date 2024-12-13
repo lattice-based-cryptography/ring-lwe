@@ -13,7 +13,7 @@ Lattice-based encryption methods (ring-LWE, module-LWE) in pure Rust.
 
 To build the binary.
 
-Note: parameters may optionally be specified by appending `--params <n> <q> <t>` for ring-LWE and `--params <n> <q> <k>` for module-LWE.
+_Note_: parameters may optionally be specified by appending `--params <n> <q> <t>` for ring-LWE and `--params <n> <q> <k>` for module-LWE. If ommitted, the default parameters will be used.
 
 `cargo run -- keygen`
 
