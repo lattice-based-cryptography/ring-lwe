@@ -39,12 +39,24 @@ fn main() {
             .collect();
         pk_coeffs.extend(pk.1.iter().flat_map(|poly| poly.coeffs()).cloned()); 
 
-        let sk_coeffs: Vec<i64> = sk.iter().flat_map(|poly| poly.coeffs()).cloned().collect(); 
+        let sk_coeffs: Vec<i64> = sk.iter().flat_map(|poly| poly.coeffs()).cloned().collect();
 
-        let mut keys: HashMap<String, Vec<i64>> = HashMap::new();
+        // Convert the public key coefficients to a comma-separated string
+        let pk_coeffs_str = pk_coeffs.iter()
+            .map(|coef| coef.to_string())
+            .collect::<Vec<String>>()
+            .join(",");
+    
+            // Convert the secret key coefficients to a comma-separated string
+        let sk_coeffs_str = sk_coeffs.iter()
+            .map(|coef| coef.to_string())
+            .collect::<Vec<String>>()
+            .join(",");
 
-        keys.insert(String::from("secret"), sk_coeffs);
-        keys.insert(String::from("public"), pk_coeffs);
+        let mut keys: HashMap<String, String> = HashMap::new();
+
+        keys.insert(String::from("secret"), sk_coeffs_str);
+        keys.insert(String::from("public"), pk_coeffs_str);
 
         //print the secret and public keys as 
         println!("{:?}", keys);
