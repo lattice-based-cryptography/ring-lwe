@@ -6,7 +6,7 @@ use crate::keygen::keygen;
 use crate::encrypt::encrypt;
 use crate::decrypt::decrypt;
 use ring_lwe::parameters;
-use serde_json::json;
+use std::collections::HashMap;
 
 use std::env;
 
@@ -26,16 +26,26 @@ fn main() {
     if method == "keygen" {
         // Keygen: Convert n and q from usize to i64
         let (pk, sk) = keygen(n, q.try_into().unwrap(), &poly_mod);
-        let mut pub_key: Vec<i64> = Vec::with_capacity(2*n);
-        pub_key.extend(pk[0].coeffs());
-        pub_key.extend(pk[1].coeffs());
-        // Convert keys to vector of integers
-        let keys = json!({
-            "secret": sk.coeffs(),
-            "public": pub_key
-        });
+        let mut pk_coeffs: Vec<i64> = Vec::with_capacity(2*n);
+        pk_coeffs.extend(pk[0].coeffs());
+        pk_coeffs.extend(pk[1].coeffs());
+        //convert the secret key and public key to strings
+        // Convert the public key coefficients to a comma-separated string
+        let pk_coeffs_str = pk_coeffs.iter()
+            .map(|coef| coef.to_string())
+            .collect::<Vec<String>>()
+            .join(",");
+        // Convert the secret key coefficients to a comma-separated string
+        let sk_coeffs_str = sk.coeffs().iter()
+            .map(|coef| coef.to_string())
+            .collect::<Vec<String>>()
+            .join(",");
+        //store public/secret keys in HashMap
+        let mut keys: HashMap<String, String> = HashMap::new();
+        keys.insert(String::from("secret"), sk_coeffs_str);
+        keys.insert(String::from("public"), pk_coeffs_str);
         // Print keys in JSON format
-        println!("{}", serde_json::to_string(&keys).unwrap());
+        println!("{:?}", keys);
     }
 
     //encrypt given public key and message as args
