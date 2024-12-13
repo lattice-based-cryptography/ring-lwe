@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{mod_coeffs, polymul, polyadd, gen_binary_poly, gen_normal_poly};
+use ring_lwe::{parameters, mod_coeffs, polymul, polyadd, gen_binary_poly, gen_normal_poly};
 
 pub fn encrypt(
     pk: &[Polynomial<i64>; 2],    // Public key (b, a)
@@ -23,4 +23,54 @@ pub fn encrypt(
     let ct1 = polyadd(&polymul(&pk[1], &u, q, poly_mod), &e2, q, poly_mod);
 
     (ct0, ct1)
+}
+
+pub fn encrypt_string(pk_string: &String, message: &String) -> String {
+
+    // Encryption scheme parameters
+    let (n, q, t, poly_mod) = parameters();
+
+    // Get the public key from the string and format as two Polynomials
+    let pk_arr: Vec<i64> = pk_string
+        .split(',')
+        .filter_map(|x| x.parse::<i64>().ok())
+        .collect();
+
+    let pk_b = Polynomial::new(pk_arr[..n].to_vec());
+    let pk_a = Polynomial::new(pk_arr[n..].to_vec());
+    let pk = [pk_b, pk_a];
+
+    // Define the integers to be encrypted
+    
+    let message_bytes: Vec<String> = message
+        .bytes()
+        .map(|byte| format!("{:b}", byte))
+        .collect();
+
+    let message_ints: Vec<i64> = message_bytes
+        .iter()
+        .filter_map(|byte| i64::from_str_radix(byte, 2).ok())
+        .collect();
+
+    // Convert message integers into a vector of Polynomials
+    let message_blocks: Vec<Polynomial<i64>> = message_ints
+        .chunks(n)
+        .map(|chunk| Polynomial::new(chunk.to_vec()))
+        .collect();
+
+    // Encrypt each integer message block
+    let mut ciphertext_list: Vec<i64> = Vec::new();
+    for message_block in message_blocks {
+        let ciphertext = encrypt(&pk, n, q.try_into().unwrap(), t.try_into().unwrap(), &poly_mod, &message_block);
+        ciphertext_list.extend(ciphertext.0.coeffs());
+        ciphertext_list.extend(ciphertext.1.coeffs());
+    }
+
+    // Format the ciphertext list as a comma-separated string
+    let ciphertext_string = ciphertext_list
+        .iter()
+        .map(|x| x.to_string())
+        .collect::<Vec<String>>()
+        .join(",");
+    ciphertext_string
 }

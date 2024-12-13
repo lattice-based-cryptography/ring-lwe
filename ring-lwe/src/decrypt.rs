@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{polymul, polyadd};
+use ring_lwe::{parameters, polymul, polyadd};
 
 pub fn decrypt(
     sk: &Polynomial<i64>,    // Secret key
@@ -17,4 +17,46 @@ pub fn decrypt(
 		decrypted_coeffs.push(s.round() as i64 % t);
 	}
     Polynomial::new(decrypted_coeffs)
+}
+
+pub fn decrypt_string(sk_string: &String, ciphertext_string: &String) -> String {
+
+    // Encryption scheme parameters
+    let (n, q, t, poly_mod) = parameters();
+
+    //get the secret key and format as polynomial
+    let sk_coeffs: Vec<i64> = sk_string
+        .split(',')
+        .filter_map(|x| x.parse::<i64>().ok())
+        .collect();
+    let sk = Polynomial::new(sk_coeffs);
+
+    // Get the ciphertext to be decrypted
+    let ciphertext_array: Vec<i64> = ciphertext_string
+    .split(',')
+    .map(|s| s.parse::<i64>().unwrap())
+    .collect();
+
+    let num_bytes = ciphertext_array.len() / (2 * n);
+    let mut decrypted_message = String::new();
+
+    for i in 0..num_bytes {
+        let c0 = Polynomial::new(ciphertext_array[2 * i * n..(2 * i + 1) * n].to_vec());
+        let c1 = Polynomial::new(ciphertext_array[(2 * i + 1) * n..(2 * i + 2) * n].to_vec());
+        let ct = [c0, c1];
+
+        // Decrypt the ciphertext
+        let decrypted_poly = decrypt(&sk, n, q.try_into().unwrap(), t.try_into().unwrap(), &poly_mod, &ct);
+
+        // Convert the coefficients to characters and append to the message
+        decrypted_message.push_str(
+            &decrypted_poly
+                .coeffs()
+                .iter()
+                .map(|&coeff| coeff as u8 as char)
+                .collect::<String>(),
+        );
+    }
+
+    decrypted_message
 }
