@@ -70,11 +70,6 @@ fn main() {
             .map(|coef| coef.to_string())
             .collect::<Vec<String>>()
             .join(",");
-
-        println!("sk_coeffs_len = {}",sk_coeffs.len());
-        println!("expected sk_coeffs_len = {}",k*n);
-        println!("pk_coeffs_len = {}",pk_coeffs.len());
-        println!("expected pk_coeffs_len = {}",(k+1)*k*n);
         
         //store the secret/public key in a HashMap
         let mut keys: HashMap<String, String> = HashMap::new();
