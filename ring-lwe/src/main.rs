@@ -5,7 +5,6 @@ mod decrypt;
 use crate::keygen::keygen_string;
 use crate::encrypt::encrypt_string;
 use crate::decrypt::decrypt_string;
-
 use std::env;
 use ring_lwe::Parameters;
 
@@ -16,9 +15,11 @@ fn main() {
     let mut params = Parameters::default();
     // Check for --params flag and get the updated values directly
     if let Some(pos) = args.iter().position(|x| x == "--params") {
-        params.n = args[pos+1].parse().unwrap_or(params.n);
-        params.q = args[pos+2].parse().unwrap_or(params.q);
-        params.t = args[pos+3].parse().unwrap_or(params.t);
+        if args.len() > pos + 3 {
+            params.n = args.get(pos + 1).and_then(|s| s.parse().ok()).unwrap_or(params.n);
+            params.q = args.get(pos + 2).and_then(|s| s.parse().ok()).unwrap_or(params.q);
+            params.k = args.get(pos + 3).and_then(|s| s.parse().ok()).unwrap_or(params.k);
+        }
     }
 
     let method = if args.len() > 1 {&args[1]} else {""};
