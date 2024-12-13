@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{parameters, mod_coeffs, polymul, polyadd, gen_binary_poly, gen_normal_poly};
+use ring_lwe::{Parameters, mod_coeffs, polymul, polyadd, gen_binary_poly, gen_normal_poly};
 
 pub fn encrypt(
     pk: &[Polynomial<i64>; 2],    // Public key (b, a)
@@ -25,10 +25,7 @@ pub fn encrypt(
     (ct0, ct1)
 }
 
-pub fn encrypt_string(pk_string: &String, message: &String) -> String {
-
-    // Encryption scheme parameters
-    let (n, q, t, poly_mod) = parameters();
+pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters) -> String {
 
     // Get the public key from the string and format as two Polynomials
     let pk_arr: Vec<i64> = pk_string
@@ -36,8 +33,8 @@ pub fn encrypt_string(pk_string: &String, message: &String) -> String {
         .filter_map(|x| x.parse::<i64>().ok())
         .collect();
 
-    let pk_b = Polynomial::new(pk_arr[..n].to_vec());
-    let pk_a = Polynomial::new(pk_arr[n..].to_vec());
+    let pk_b = Polynomial::new(pk_arr[..params.n].to_vec());
+    let pk_a = Polynomial::new(pk_arr[params.n..].to_vec());
     let pk = [pk_b, pk_a];
 
     // Define the integers to be encrypted
@@ -54,14 +51,14 @@ pub fn encrypt_string(pk_string: &String, message: &String) -> String {
 
     // Convert message integers into a vector of Polynomials
     let message_blocks: Vec<Polynomial<i64>> = message_ints
-        .chunks(n)
+        .chunks(params.n)
         .map(|chunk| Polynomial::new(chunk.to_vec()))
         .collect();
 
     // Encrypt each integer message block
     let mut ciphertext_list: Vec<i64> = Vec::new();
     for message_block in message_blocks {
-        let ciphertext = encrypt(&pk, n, q.try_into().unwrap(), t.try_into().unwrap(), &poly_mod, &message_block);
+        let ciphertext = encrypt(&pk, params.n, params.q as i64, params.t as i64, &params.poly_mod, &message_block);
         ciphertext_list.extend(ciphertext.0.coeffs());
         ciphertext_list.extend(ciphertext.1.coeffs());
     }

@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{parameters, polymul, polyadd, gen_binary_poly, gen_uniform_poly, gen_normal_poly};
+use ring_lwe::{Parameters, polymul, polyadd, gen_binary_poly, gen_uniform_poly, gen_normal_poly};
 use std::collections::HashMap;
 
 pub fn keygen(size: usize, modulus: i64, poly_mod: &Polynomial<i64>) -> ([Polynomial<i64>; 2], Polynomial<i64>) {
@@ -13,14 +13,12 @@ pub fn keygen(size: usize, modulus: i64, poly_mod: &Polynomial<i64>) -> ([Polyno
     ([b, a], sk)
 }
 
-pub fn keygen_string() -> HashMap<String,String> {
-    // Encryption scheme parameters
-    let (n, q, _t, poly_mod) = parameters();
+pub fn keygen_string(params: &Parameters) -> HashMap<String,String> {
 
-    // Keygen: Convert n and q from usize to i64
-    let (pk, sk) = keygen(n, q.try_into().unwrap(), &poly_mod);
+    // generate keys using parameters
+    let (pk, sk) = keygen(params.n, params.q as i64, &params.poly_mod);
 
-    let mut pk_coeffs: Vec<i64> = Vec::with_capacity(2*n);
+    let mut pk_coeffs: Vec<i64> = Vec::with_capacity(2*params.n);
     pk_coeffs.extend(pk[0].coeffs());
     pk_coeffs.extend(pk[1].coeffs());
 

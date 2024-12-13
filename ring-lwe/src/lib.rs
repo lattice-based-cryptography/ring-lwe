@@ -1,20 +1,25 @@
 use polynomial_ring::Polynomial;
-use num_traits::pow;
 use rand_distr::{Uniform, Normal, Distribution};
 
-pub fn parameters() -> (usize, usize, usize, Polynomial<i64>) {
-	// polynomial modulus degree
-	let n = pow(2,4);
-	// ciphertext modulus
-    let q = pow(2,15);
-    // plaintext modulus
-    let t = pow(2,8);
-    // polynomial modulus x^n+1
-	let mut poly_vec = vec![0i64;n+1];
-	poly_vec[0] = 1;
-	poly_vec[n] = 1;
-    let poly_mod = Polynomial::new(poly_vec);
-    return (n,q,t,poly_mod)
+#[derive(Debug)]
+pub struct Parameters {
+    pub n: usize,       // Polynomial modulus degree
+    pub q: usize,       // Ciphertext modulus
+    pub t: usize,       // Plaintext modulus
+    pub poly_mod: Polynomial<i64>, // Polynomial modulus (x^n + 1 representation)
+}
+
+impl Default for Parameters {
+    fn default() -> Self {
+        let n = 16;
+        let q = 32_768;
+        let t = 256;
+        let mut poly_vec = vec![0i64;n+1];
+        poly_vec[0] = 1;
+        poly_vec[n] = 1;
+        let poly_mod = Polynomial::new(poly_vec);
+        Parameters { n, q, t, poly_mod }
+    }
 }
 
 pub fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
