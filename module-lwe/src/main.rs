@@ -9,18 +9,31 @@ use std::env;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let method = if args.len() > 1 {
-        &args[1]
-    } else {
-        ""
-    };
+    let method = if args.len() > 1 {&args[1]} else {""};
+
+    if method == "test" {
+        if args.len() != 3 {
+            println!("Usage: cargo run -- test <message>");
+            return;
+        }
+        let message_string = &args[2];
+        let keypair = keygen_string();
+        let pk_string = keypair.get("public").unwrap();
+        let sk_string = keypair.get("secret").unwrap();
+        let ciphertext_string = encrypt_string(&pk_string,message_string);
+        let decrypted_message = decrypt_string(&sk_string,&ciphertext_string);
+        let test_passed = *message_string == decrypted_message;
+        println!("{} =? {}",*message_string,decrypted_message);
+        println!("{}",test_passed);
+    }
 
     if method == "keygen" {
         if args.len() != 2 {
             println!("Usage: cargo run -- keygen");
             return;
         }
-        println!("{:?}", keygen_string());
+        let keypair = keygen_string();
+        println!("{:?}", keypair);
     }
 
     if method == "encrypt" {
