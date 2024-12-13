@@ -5,7 +5,6 @@ mod decrypt;
 use crate::keygen::keygen_string;
 use crate::encrypt::encrypt_string;
 use crate::decrypt::decrypt_string;
-
 use std::env;
 use module_lwe::Parameters;
 
