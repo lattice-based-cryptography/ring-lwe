@@ -32,20 +32,34 @@ fn main() {
         let (a,t,sk) = keygen(n,q as i64,k,&f);
         let pk = (a,t);
 
-        println!("{:?}",sk);
-
         // Convert public key to a flattened list of coefficients
         let mut pk_coeffs: Vec<i64> = pk.0
             .iter()
-            .flat_map(|row| row.iter().flat_map(|poly| poly.coeffs().to_vec()))
+            .flat_map(|row| {
+                row.iter().flat_map(|poly| {
+                    let mut coeffs = poly.coeffs().to_vec();
+                    coeffs.resize(n, 0); // Resize to include leading zeros up to size `n`
+                    coeffs
+                })
+            })
             .collect();
-        pk_coeffs.extend(pk.1.iter().flat_map(|poly| poly.coeffs().to_vec()));
+        pk_coeffs.extend(
+            pk.1.iter().flat_map(|poly| {
+                let mut coeffs = poly.coeffs().to_vec();
+                coeffs.resize(n, 0); // Resize to include leading zeros up to size `n`
+                coeffs
+            }),
+        );
 
         // Convert secret key to a flattened list of coefficients
         let sk_coeffs: Vec<i64> = sk
             .iter()
-            .flat_map(|poly| poly.coeffs().to_vec())
-            .collect();
+            .flat_map(|poly| {
+                let mut coeffs = poly.coeffs().to_vec();
+                coeffs.resize(n, 0); // Resize to include leading zeros up to size `n`
+                coeffs
+            })
+        .collect();
 
         // Convert the public/secret key coefficients to a comma-separated string
         let pk_coeffs_str = pk_coeffs.iter()
@@ -56,6 +70,11 @@ fn main() {
             .map(|coef| coef.to_string())
             .collect::<Vec<String>>()
             .join(",");
+
+        println!("sk_coeffs_len = {}",sk_coeffs.len());
+        println!("expected sk_coeffs_len = {}",k*n);
+        println!("pk_coeffs_len = {}",pk_coeffs.len());
+        println!("expected pk_coeffs_len = {}",(k+1)*k*n);
         
         //store the secret/public key in a HashMap
         let mut keys: HashMap<String, String> = HashMap::new();
