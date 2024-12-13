@@ -7,6 +7,7 @@ use crate::encrypt::encrypt;
 use crate::decrypt::decrypt;
 use module_lwe::{parameters,gen_small_vector};
 use std::env;
+use std::collections::HashMap;
 
 use polynomial_ring::Polynomial;
 
@@ -40,23 +41,13 @@ fn main() {
 
         let sk_coeffs: Vec<i64> = sk.iter().flat_map(|poly| poly.coeffs()).cloned().collect(); 
 
-        // Convert the public key coefficients to a comma-separated string
-        let pk_coeffs_str = pk_coeffs.iter()
-            .map(|coef| coef.to_string())
-            .collect::<Vec<String>>()
-            .join(",");
+        let mut keys: HashMap<String, Vec<i64>> = HashMap::new();
 
-        // Convert the secret key coefficients to a comma-separated string
-        let sk_coeffs_str = sk_coeffs.iter()
-            .map(|coef| coef.to_string())
-            .collect::<Vec<String>>()
-            .join(",");
+        keys.insert(String::from("secret"), sk_coeffs);
+        keys.insert(String::from("public"), pk_coeffs);
 
-        // Print public key coefficients as a string
-        println!("Public Key Coefficients: {}", pk_coeffs_str);
-
-        // Print secret key coefficients as a string
-        println!("Secret Key Coefficients: {}", sk_coeffs_str);
+        //print the secret and public keys as 
+        println!("{:?}", keys);
     }
 
     //encrypt given public key and message as args
