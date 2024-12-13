@@ -20,7 +20,7 @@ _Note_: Parameters may be set by appending `--params <n> <q> <t>` for ring-LWE a
 This will generate a public/secret keypair. 
 
 - ring-LWE: The public key is the concatenated coefficients of two polynomials of degree `n`. The secret key is the coefficients of a binary polynomial of degree `n`.
-- module-LWE: The public key is a matrix of polynomials of degree `n` and a vector of polynomials of degree `n`. The secret key is a vector of polynomials of degree `n`.
+- module-LWE: The public key is a `k`x`k` matrix of polynomials of degree `n` and a `k`-vector of polynomials of degree `n`. The secret key is a `k`-vector of polynomials of degree `n`.
 
 `cargo run -- encrypt <public_key> <message>`
 
