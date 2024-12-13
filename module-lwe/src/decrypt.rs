@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use module_lwe::mul_vec_simple;
+use module_lwe::{parameters,mul_vec_simple};
 use module_lwe::ring_mod::polysub;
 
 pub fn decrypt(
@@ -26,4 +26,57 @@ pub fn decrypt(
 		decrypted_coeffs.push(s);
 	}
     decrypted_coeffs
+}
+
+//decrypt a ciphertext string given a secret key
+pub fn decrypt_string(sk_string: &String, ciphertext_string: &String) -> String {
+
+    // Parameters and inputs
+    let (n, q, k, f) = parameters();
+    
+    // Convert the secret key string into a Vec<Polynomial<i64>>
+    let sk_array: Vec<i64> = sk_string.split(',')
+        .filter_map(|s| s.parse().ok())
+        .collect();
+    let sk: Vec<Polynomial<i64>> = sk_array.chunks(n)
+        .map(|chunk| Polynomial::new(chunk.to_vec()))
+        .collect();
+    
+    // Parse ciphertext into u and v
+    let ciphertext_list: Vec<i64> = ciphertext_string.split(',')
+        .filter_map(|s| s.parse().ok())
+        .collect();
+    let block_size = (k + 1) * n;
+    let num_blocks = ciphertext_list.len() / block_size;
+
+    let mut message_binary = vec![];
+    
+    for i in 0..num_blocks {
+        // Get u and v for this block
+        let u_array = &ciphertext_list[i * block_size..i * block_size + k * n];
+        let v_array = &ciphertext_list[i * block_size + k * n..(i + 1) * block_size];
+            
+        let u: Vec<Polynomial<i64>> = u_array.chunks(n)
+            .map(|chunk| Polynomial::new(chunk.to_vec()))
+            .collect();
+        let v = Polynomial::new(v_array.to_vec());
+            
+        // Decrypt the ciphertext
+        let mut m_b = decrypt(&sk, q as i64, &f, &u, &v);
+        m_b.resize(n,0);
+            
+        message_binary.extend(m_b);
+    }
+    
+    // Group the bits back into bytes (8 bits each)
+    let byte_chunks: Vec<String> = message_binary.chunks(8)
+        .map(|chunk| chunk.iter().map(|bit| bit.to_string()).collect())
+        .collect();
+        
+    // Convert each binary string back into a character
+    let message_string: String = byte_chunks.iter()
+        .map(|byte| char::from_u32(i64::from_str_radix(byte, 2).unwrap() as u32).unwrap())
+        .collect();
+        
+    message_string
 }
