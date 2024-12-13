@@ -24,7 +24,7 @@ fn main() {
     let method = if args.len() > 1 {&args[1]} else {""};
 
     if method == "test" {
-        if args.len() != 3 {
+        if args.len() != 3 && args.len() != 7 {
             println!("Usage: cargo run -- test <message>");
             return;
         }
@@ -40,7 +40,7 @@ fn main() {
     }
 
     if method == "keygen"{
-        if args.len() != 2 {
+        if args.len() != 2 && args.len() != 6 {
             println!("Usage: cargo run -- keygen");
             return;
         }
@@ -50,7 +50,7 @@ fn main() {
 
     //encrypt given public key and message as args
     if method == "encrypt" {
-        if args.len() != 4 {
+        if args.len() != 4 && args.len() != 8 {
             println!("Usage: cargo run -- encrypt <public_key> <message_string>");
             return;
         }
@@ -61,7 +61,7 @@ fn main() {
     }
 
     if method == "decrypt" {
-        if args.len() != 4 {
+        if args.len() != 4 && args.len() != 8 {
             println!("Usage: cargo run -- decrypt <secret_key> <ciphertext>");
             return;
         }
