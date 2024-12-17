@@ -2,9 +2,9 @@ mod keygen;
 mod encrypt;
 mod decrypt;
 
-use crate::keygen::keygen_string;
-use crate::encrypt::encrypt_string;
-use crate::decrypt::decrypt_string;
+use crate::keygen::{keygen,keygen_string};
+use crate::encrypt::{encrypt,encrypt_string};
+use crate::decrypt::{decrypt,decrypt_string};
 use std::env;
 use ring_lwe::Parameters;
 use polynomial_ring::Polynomial;
@@ -29,6 +29,7 @@ fn main() {
 
     let method = if args.len() > 1 {&args[1]} else {""};
 
+    //perform a basis keygen/encrypt/decrypt test on single message
     if method == "test" {
         if args.len() != 3 && args.len() != 7 {
             println!("Usage: cargo run -- test <message>");
@@ -45,6 +46,49 @@ fn main() {
         println!("{}",test_passed);
     }
 
+    //test (partially) homomorphic property on two integers
+    if method == "test_hom" {
+        if args.len() != 4 && args.len() != 8 {
+            println!("Usage: cargo run -- test <message_0> <message_1>");
+            return;
+        }
+        //read the message strings
+        let m0_string = &args[2];
+        let m1_string = &args[3];
+        //create polynomials from message strings
+        let m0_int: i64 = m0_string.parse().expect("Failed to parse integer.");
+        let m1_int: i64 = m1_string.parse().expect("Failed to parse integer.");
+        let m0_poly = Polynomial::new({
+            let mut v = vec![0i64; params.n + 1];
+            v[0] = m0_int;
+            v
+        });
+        let m1_poly = Polynomial::new({
+            let mut v = vec![0i64; params.n + 1];
+            v[0] = m1_int;
+            v
+        });
+        println!("m0_poly = {:?}", m0_poly);
+        println!("m1_poly = {:?}", m1_poly);
+        //generate the keypair
+        let keypair = keygen(params.n,params.q as i64,&params.poly_mod);
+        //get public and secret keys
+        let pk = keypair.0;
+        let sk = keypair.1;
+        //encrypt plaintext messages
+        let ciphertext_0 = encrypt(&pk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&m0_poly);
+        let ciphertext_1 = encrypt(&pk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&m1_poly);
+        //compute sums and products of encrypted data
+        let ciphertext_sum = [&ciphertext_0.0 + &ciphertext_1.0, &ciphertext_0.1 + &ciphertext_1.1];
+        let ciphertext_product = [&ciphertext_0.0 * &ciphertext_1.0, &ciphertext_0.1 * &ciphertext_1.1];
+        //decrypt messages
+        let decrypted_sum = decrypt(&sk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&ciphertext_sum);
+        let decrypted_product = decrypt(&sk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&ciphertext_product);
+        println!("decrypted_sum = {}",decrypted_sum);
+        println!("decrypted_sum = {}",decrypted_product);
+    }
+
+    //generate public and secret keys (parameters optional)
     if method == "keygen"{
         if args.len() != 2 && args.len() != 6 {
             println!("Usage: cargo run -- keygen");
@@ -54,7 +98,7 @@ fn main() {
         println!("{:?}",keypair);
     }
 
-    //encrypt given public key and message as args
+    //encrypt given public key and message as args (parameters optional)
     if method == "encrypt" {
         if args.len() != 4 && args.len() != 8 {
             println!("Usage: cargo run -- encrypt <public_key> <message_string>");
@@ -66,6 +110,7 @@ fn main() {
         println!("{}", ciphertext_string);
     }
 
+    //decrypt a messsage (parameters optional)
     if method == "decrypt" {
         if args.len() != 4 && args.len() != 8 {
             println!("Usage: cargo run -- decrypt <secret_key> <ciphertext>");
