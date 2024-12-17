@@ -89,15 +89,14 @@ fn main() {
         let decrypted_sum = decrypt(&sk,params.n,params.q,params.t,&params.poly_mod,&ciphertext_sum);
         //decrypt product using relinearization
         let delta = params.q as f64 / params.t as f64;
-        println!("delta = {}",delta);
         //let decrypted_product = decrypt(&sk,params.n,params.q,params.t,&params.poly_mod,&c_prod);
         let ciphertext_prod = polyadd(&polyadd(&c.0,&polymul(&c.1,&sk,params.q,&params.poly_mod),params.q,&params.poly_mod),&polymul(&polymul(&c.2,&sk,params.q,&params.poly_mod),&sk,params.q,&params.poly_mod),params.q,&params.poly_mod);
-        println!("delta^2 = {}",delta * delta);
         //let scalar = mod_inverse(delta * delta, params.q).unwrap() as i64;
         let scalar = 1.0 / ((delta * delta) as f64);
-        println!("1/delta^2 = {}", scalar);
         let scaled_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| (coeff as f64 * scalar) as i64).collect::<Vec<_>>()),params.q);
         //print plaintext sum/product v. decrypted sum/products
+        println!("delta = {}",delta);
+        println!("delta^2 = {}",delta * delta);
         println!("plaintext sum = {}", m0_int + m1_int);
         println!("decrypted_sum = {}",decrypted_sum);
         println!("plaintext product = {}", m0_int * m1_int);
