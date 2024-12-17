@@ -6,7 +6,7 @@ use crate::keygen::{keygen,keygen_string};
 use crate::encrypt::{encrypt,encrypt_string};
 use crate::decrypt::{decrypt,decrypt_string};
 use std::env;
-use ring_lwe::{Parameters,polymul,polyadd,mod_coeffs};
+use ring_lwe::{Parameters,polymul,polyadd,mod_coeffs,polyinv};
 use polynomial_ring::Polynomial;
 
 fn main() {
@@ -79,11 +79,16 @@ fn main() {
         //compute sum of encrypted data
         let ciphertext_sum = [&u.0 + &v.0, &u.1 + &v.1];
         //compute product of encrypted data, using non-standard multiplication
-        let c = (&v.0 * &v.1, -(&u.0 * &v.1 + &u.1 * v.0), &u.0 * &u.1);
+        let c0 = polymul(&v.0,&v.1,params.q,&params.poly_mod);
+        let u0v1 = &polymul(&u.0,&v.1,params.q,&params.poly_mod);
+        let u1v0 = &polymul(&u.1,&v.0,params.q,&params.poly_mod);
+        let c1 = polyinv(&polyadd(u0v1,u1v0,params.q,&params.poly_mod),params.q);
+        let c2 = polymul(&u.0,&u.1,params.q,&params.poly_mod);
+        let c = (c0, c1, c2);
         //decrypt encrypted sum
         let decrypted_sum = decrypt(&sk,params.n,params.q,params.t,&params.poly_mod,&ciphertext_sum);
         //decrypt product using relinearization
-        let delta = params.q / params.t;
+        let delta = params.q as f64 / params.t as f64;
         println!("delta = {}",delta);
         //let decrypted_product = decrypt(&sk,params.n,params.q,params.t,&params.poly_mod,&c_prod);
         let ciphertext_prod = polyadd(&polyadd(&c.0,&polymul(&c.1,&sk,params.q,&params.poly_mod),params.q,&params.poly_mod),&polymul(&polymul(&c.2,&sk,params.q,&params.poly_mod),&sk,params.q,&params.poly_mod),params.q,&params.poly_mod);
