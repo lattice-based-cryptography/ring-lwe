@@ -68,8 +68,6 @@ fn main() {
             v[0] = m1_int;
             v
         });
-        println!("m0_poly = {:?}", m0_poly);
-        println!("m1_poly = {:?}", m1_poly);
         //generate the keypair
         let keypair = keygen(params.n,params.q as i64,&params.poly_mod);
         //get public and secret keys
@@ -81,11 +79,14 @@ fn main() {
         //compute sums and products of encrypted data
         let ciphertext_sum = [&ciphertext_0.0 + &ciphertext_1.0, &ciphertext_0.1 + &ciphertext_1.1];
         let ciphertext_product = [&ciphertext_0.0 * &ciphertext_1.0, &ciphertext_0.1 * &ciphertext_1.1];
+
         //decrypt messages
         let decrypted_sum = decrypt(&sk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&ciphertext_sum);
         let decrypted_product = decrypt(&sk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&ciphertext_product);
+        println!("plaintext sum = {}", m0_int + m1_int);
         println!("decrypted_sum = {}",decrypted_sum);
-        println!("decrypted_sum = {}",decrypted_product);
+        println!("plaintext product = {}", m0_int * m1_int);
+        println!("decrypted_product = {}",decrypted_product);
     }
 
     //generate public and secret keys (parameters optional)
