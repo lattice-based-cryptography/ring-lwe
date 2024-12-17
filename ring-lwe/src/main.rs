@@ -74,19 +74,23 @@ fn main() {
         let pk = keypair.0;
         let sk = keypair.1;
         //encrypt plaintext messages
-        let ciphertext_0 = encrypt(&pk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&m0_poly);
-        let ciphertext_1 = encrypt(&pk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&m1_poly);
-        //compute sums and products of encrypted data
-        let ciphertext_sum = [&ciphertext_0.0 + &ciphertext_1.0, &ciphertext_0.1 + &ciphertext_1.1];
-        let ciphertext_product = [&ciphertext_0.0 * &ciphertext_1.0, &ciphertext_0.1 * &ciphertext_1.1];
-
-        //decrypt messages
+        let u = encrypt(&pk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&m0_poly);
+        let v = encrypt(&pk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&m1_poly);
+        //compute sum of encrypted data
+        let ciphertext_sum = [&u.0 + &v.0, &u.1 + &v.1];
+        //compute product of encrypted data, using non-standard multiplication
+        let _c = [&v.0 * &v.1, -(&u.0 * &v.1 + &u.1 * v.0), &u.0 * &u.1];
+        //decrypt encrypted sum
         let decrypted_sum = decrypt(&sk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&ciphertext_sum);
-        let decrypted_product = decrypt(&sk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&ciphertext_product);
+        //decrypt product using relinearization
+        let delta = params.q as f64 / params.t as f64;
+        println!("delta = {}",delta);
+        //let decrypted_product = decrypt(&sk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&c_prod);
+        //print plaintext sum/product v. decrypted sum/products
         println!("plaintext sum = {}", m0_int + m1_int);
         println!("decrypted_sum = {}",decrypted_sum);
         println!("plaintext product = {}", m0_int * m1_int);
-        println!("decrypted_product = {}",decrypted_product);
+        //println!("decrypted_product = {}",decrypted_product);
     }
 
     //generate public and secret keys (parameters optional)
