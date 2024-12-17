@@ -16,7 +16,7 @@ pub fn keygen(size: usize, modulus: i64, poly_mod: &Polynomial<i64>) -> ([Polyno
 pub fn keygen_string(params: &Parameters) -> HashMap<String,String> {
 
     // generate keys using parameters
-    let (pk, sk) = keygen(params.n, params.q as i64, &params.poly_mod);
+    let (pk, sk) = keygen(params.n, params.q , &params.poly_mod);
 
     let mut pk_coeffs: Vec<i64> = Vec::with_capacity(2*params.n);
     pk_coeffs.extend(pk[0].coeffs());

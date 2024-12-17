@@ -4,8 +4,8 @@ use rand_distr::{Uniform, Normal, Distribution};
 #[derive(Debug)]
 pub struct Parameters {
     pub n: usize,       // Polynomial modulus degree
-    pub q: usize,       // Ciphertext modulus
-    pub t: usize,       // Plaintext modulus
+    pub q: i64,       // Ciphertext modulus
+    pub t: i64,       // Plaintext modulus
     pub poly_mod: Polynomial<i64>, // Polynomial modulus (x^n + 1 representation)
 }
 

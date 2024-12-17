@@ -6,7 +6,7 @@ use crate::keygen::{keygen,keygen_string};
 use crate::encrypt::{encrypt,encrypt_string};
 use crate::decrypt::{decrypt,decrypt_string};
 use std::env;
-use ring_lwe::Parameters;
+use ring_lwe::{Parameters,polymul,polyadd,mod_coeffs};
 use polynomial_ring::Polynomial;
 
 fn main() {
@@ -69,28 +69,34 @@ fn main() {
             v
         });
         //generate the keypair
-        let keypair = keygen(params.n,params.q as i64,&params.poly_mod);
+        let keypair = keygen(params.n,params.q,&params.poly_mod);
         //get public and secret keys
         let pk = keypair.0;
         let sk = keypair.1;
         //encrypt plaintext messages
-        let u = encrypt(&pk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&m0_poly);
-        let v = encrypt(&pk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&m1_poly);
+        let u = encrypt(&pk,params.n,params.q,params.t,&params.poly_mod,&m0_poly);
+        let v = encrypt(&pk,params.n,params.q,params.t,&params.poly_mod,&m1_poly);
         //compute sum of encrypted data
         let ciphertext_sum = [&u.0 + &v.0, &u.1 + &v.1];
         //compute product of encrypted data, using non-standard multiplication
-        let _c = [&v.0 * &v.1, -(&u.0 * &v.1 + &u.1 * v.0), &u.0 * &u.1];
+        let c = (&v.0 * &v.1, -(&u.0 * &v.1 + &u.1 * v.0), &u.0 * &u.1);
         //decrypt encrypted sum
-        let decrypted_sum = decrypt(&sk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&ciphertext_sum);
+        let decrypted_sum = decrypt(&sk,params.n,params.q,params.t,&params.poly_mod,&ciphertext_sum);
         //decrypt product using relinearization
-        let delta = params.q as f64 / params.t as f64;
+        let delta = params.q / params.t;
         println!("delta = {}",delta);
-        //let decrypted_product = decrypt(&sk,params.n,params.q as i64,params.t as i64,&params.poly_mod,&c_prod);
+        //let decrypted_product = decrypt(&sk,params.n,params.q,params.t,&params.poly_mod,&c_prod);
+        let ciphertext_prod = polyadd(&polyadd(&c.0,&polymul(&c.1,&sk,params.q,&params.poly_mod),params.q,&params.poly_mod),&polymul(&polymul(&c.2,&sk,params.q,&params.poly_mod),&sk,params.q,&params.poly_mod),params.q,&params.poly_mod);
+        println!("delta^2 = {}",delta * delta);
+        //let scalar = mod_inverse(delta * delta, params.q).unwrap() as i64;
+        let scalar = 1.0 / ((delta * delta) as f64);
+        println!("1/delta^2 = {}", scalar);
+        let scaled_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| (coeff as f64 * scalar) as i64).collect::<Vec<_>>()),params.q);
         //print plaintext sum/product v. decrypted sum/products
         println!("plaintext sum = {}", m0_int + m1_int);
         println!("decrypted_sum = {}",decrypted_sum);
         println!("plaintext product = {}", m0_int * m1_int);
-        //println!("decrypted_product = {}",decrypted_product);
+        println!("decrypted_product = {:?}",scaled_prod);
     }
 
     //generate public and secret keys (parameters optional)

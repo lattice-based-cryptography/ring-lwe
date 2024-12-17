@@ -58,7 +58,7 @@ pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters)
     // Encrypt each integer message block
     let mut ciphertext_list: Vec<i64> = Vec::new();
     for message_block in message_blocks {
-        let ciphertext = encrypt(&pk, params.n, params.q as i64, params.t as i64, &params.poly_mod, &message_block);
+        let ciphertext = encrypt(&pk, params.n, params.q, params.t, &params.poly_mod, &message_block);
         ciphertext_list.extend(ciphertext.0.coeffs());
         ciphertext_list.extend(ciphertext.1.coeffs());
     }
