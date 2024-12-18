@@ -60,12 +60,12 @@ fn main() {
         let m0_int: i64 = m0_string.parse().expect("Failed to parse integer.");
         let m1_int: i64 = m1_string.parse().expect("Failed to parse integer.");
         let m0_poly = Polynomial::new({
-            let mut v = vec![0i64; n + 1];
+            let mut v = vec![0i64; n];
             v[0] = m0_int;
             v
         });
         let m1_poly = Polynomial::new({
-            let mut v = vec![0i64; n + 1];
+            let mut v = vec![0i64; n];
             v[0] = m1_int;
             v
         });
@@ -98,6 +98,7 @@ fn main() {
         
         //print results
         println!("input polys m1={:?} m2={:?}",m0_poly, m1_poly);
+        println!("m0 len = {:?}",m0_poly);
         println!("plaintext sum = {}", m0_int + m1_int);
         println!("decrypted_sum = {}",decrypted_sum);
         println!("delta = {}",delta);
