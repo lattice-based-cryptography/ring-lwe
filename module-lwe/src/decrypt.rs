@@ -32,7 +32,7 @@ pub fn decrypt(
 pub fn decrypt_string(sk_string: &String, ciphertext_string: &String, params: &Parameters) -> String {
 
     //get parameters
-    let (n, k, q, f) = (params.n, params.k, params.q, &params.f);
+    let (n, q, k, f) = (params.n, params.q, params.k, &params.f);
     
     // Convert the secret key string into a Vec<Polynomial<i64>>
     let sk_array: Vec<i64> = sk_string.split(',')

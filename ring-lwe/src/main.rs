@@ -52,7 +52,7 @@ fn main() {
             println!("Usage: cargo run -- test <message_0> <message_1>");
             return;
         }
-        let (n, k, q, f) = (params.n, params.k, params.q, &params.f);
+        let (n, q, t, f) = (params.n, params.q, params.t, &params.f);
         //read the message strings
         let m0_string = &args[2];
         let m1_string = &args[3];
@@ -93,14 +93,16 @@ fn main() {
         let c2s_squared = &polymul(&polymul(&c.2,&sk,q,&f),&sk,q,&f);
         let ciphertext_prod = polyadd(&polyadd(&c.0,c1s,q,&f),c2s_squared,q,&f);
         //let delta = q / t, divide by 1 / delta^2
-        let scaled_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| (coeff / (delta * delta))).collect::<Vec<_>>()),q);
+        let delta = q / t;
+        let scaled_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| (coeff as f64 / (delta * delta) as f64) as i64).collect::<Vec<_>>()),q);
         //print plaintext sum/product v. decrypted sum/products
+        println!("input polys m1={:?} m2={:?}",m0_poly, m1_poly);
         println!("delta = {}",delta);
         println!("delta^2 = {}",delta * delta);
         println!("plaintext sum = {}", m0_int + m1_int);
         println!("decrypted_sum = {}",decrypted_sum);
         println!("plaintext product = {}", m0_int * m1_int);
-        println!("decrypted_product = {:?}",scaled_prod);
+        println!("scaled_product = {:?}",scaled_prod);
     }
 
     //generate public and secret keys (parameters optional)
