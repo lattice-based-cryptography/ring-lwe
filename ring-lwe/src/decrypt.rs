@@ -43,7 +43,7 @@ pub fn decrypt_string(sk_string: &String, ciphertext_string: &String, params: &P
         let ct = [c0, c1];
 
         // Decrypt the ciphertext
-        let decrypted_poly = decrypt(&sk, params.n, params.q as i64, params.t as i64, &params.f, &ct);
+        let decrypted_poly = decrypt(&sk, params.n, params.q, params.t, &params.f, &ct);
 
         // Convert the coefficients to characters and append to the message
         decrypted_message.push_str(
