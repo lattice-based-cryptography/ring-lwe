@@ -17,6 +17,7 @@ pub fn test_basic(message: &String, params: &Parameters) {
     println!("test passed");
 }
 
+//test homomorphic addition property: ensure sum of encrypted plaintexts decrypts to plaintext sum
 pub fn test_hom_add(m0: &String, m1: &String, params: &Parameters) {
 
     //create polynomials from message strings
@@ -51,7 +52,7 @@ pub fn test_hom_add(m0: &String, m1: &String, params: &Parameters) {
     println!("test passed!")
 }
 
-//test homomorphic properties of addition and multiplcation
+//test homomorphic multiplcation property: product of encrypted plaintexts should decrypt to plaintext product
 pub  fn test_hom_prod(m0: &String, m1: &String, params: &Parameters) {
     //read in parameters
     let (n, q, t, f) = (params.n, params.q, params.t, &params.f);
