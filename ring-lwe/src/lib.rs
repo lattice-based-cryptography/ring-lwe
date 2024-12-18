@@ -6,7 +6,7 @@ pub struct Parameters {
     pub n: usize,       // Polynomial modulus degree
     pub q: i64,       // Ciphertext modulus
     pub t: i64,       // Plaintext modulus
-    pub poly_mod: Polynomial<i64>, // Polynomial modulus (x^n + 1 representation)
+    pub f: Polynomial<i64>, // Polynomial modulus (x^n + 1 representation)
 }
 
 impl Default for Parameters {
@@ -17,8 +17,8 @@ impl Default for Parameters {
         let mut poly_vec = vec![0i64;n+1];
         poly_vec[0] = 1;
         poly_vec[n] = 1;
-        let poly_mod = Polynomial::new(poly_vec);
-        Parameters { n, q, t, poly_mod }
+        let f = Polynomial::new(poly_vec);
+        Parameters { n, q, t, f }
     }
 }
 
@@ -42,31 +42,31 @@ pub fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
 	}
 }
 
-pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_mod : &Polynomial<i64>) -> Polynomial<i64> {
+pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
     //Multiply two polynoms
     //Args:
     //	x, y: two polynoms to be multiplied.
     //	modulus: coefficient modulus.
-    //	poly_mod: polynomial modulus.
+    //	f: polynomial modulus.
     //Returns:
-    //	polynomial in Z_modulus[X]/(poly_mod).
+    //	polynomial in Z_modulus[X]/(f).
 	let mut r = x*y;
 	r = mod_coeffs(r, modulus);
-	r.division(poly_mod);
+	r.division(f);
 	mod_coeffs(r, modulus)
 }
 
-pub fn polyadd(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_mod : &Polynomial<i64>) -> Polynomial<i64> {
+pub fn polyadd(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
     //Add two polynoms
     //Args:
     //	x, y: two polynoms to be added.
     //	modulus: coefficient modulus.
-    //	poly_mod: polynomial modulus.
+    //	f: polynomial modulus.
     //Returns:
-    //	polynomial in Z_modulus[X]/(poly_mod).
+    //	polynomial in Z_modulus[X]/(f).
 	let mut r = x+y;
 	r = mod_coeffs(r, modulus);
-	r.division(poly_mod);
+	r.division(f);
 	mod_coeffs(r, modulus)
 }
 
@@ -76,15 +76,15 @@ pub fn polyinv(x : &Polynomial<i64>, modulus: i64) -> Polynomial<i64> {
   mod_coeffs(y, modulus)
 }
 
-pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_mod : Polynomial<i64>) -> Polynomial<i64> {
+pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : Polynomial<i64>) -> Polynomial<i64> {
     //Subtract two polynoms
     //Args:
     //	x, y: two polynoms to be added.
     //	modulus: coefficient modulus.
-    //	poly_mod: polynomial modulus.
+    //	f: polynomial modulus.
     //Returns:
-    //	polynomial in Z_modulus[X]/(poly_mod).
-	polyadd(x, &polyinv(y, modulus), modulus, &poly_mod)
+    //	polynomial in Z_modulus[X]/(f).
+	polyadd(x, &polyinv(y, modulus), modulus, &f)
 }
 
 pub fn gen_binary_poly(size : usize) -> Polynomial<i64> {

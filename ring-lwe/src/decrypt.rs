@@ -6,10 +6,10 @@ pub fn decrypt(
     n: usize,                // Polynomial size
     q: i64,                     // Ciphertext modulus
     t: i64,                     // Plaintext modulus
-    poly_mod: &Polynomial<i64>,  // Polynomial modulus
+    f: &Polynomial<i64>,  // Polynomial modulus
     ct: &[Polynomial<i64>; 2],        // Array of ciphertext polynomials
 ) -> Polynomial<i64> {
-	let scaled_pt = polyadd(&polymul(&ct[1], sk, q, poly_mod),&ct[0], q, poly_mod);
+	let scaled_pt = polyadd(&polymul(&ct[1], sk, q, f),&ct[0], q, f);
 	let mut decrypted_coeffs = vec![];
 	let mut s;
 	for i in 0..n {
@@ -43,7 +43,7 @@ pub fn decrypt_string(sk_string: &String, ciphertext_string: &String, params: &P
         let ct = [c0, c1];
 
         // Decrypt the ciphertext
-        let decrypted_poly = decrypt(&sk, params.n, params.q as i64, params.t as i64, &params.poly_mod, &ct);
+        let decrypted_poly = decrypt(&sk, params.n, params.q as i64, params.t as i64, &params.f, &ct);
 
         // Convert the coefficients to characters and append to the message
         decrypted_message.push_str(

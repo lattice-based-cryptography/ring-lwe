@@ -3,24 +3,23 @@ use ring_lwe::{Parameters, mod_coeffs, polymul, polyadd, gen_binary_poly, gen_no
 
 pub fn encrypt(
     pk: &[Polynomial<i64>; 2],    // Public key (b, a)
-    size: usize,                // Polynomial size
+    n: usize,                // Polynomial size
     q: i64,                     // Ciphertext modulus
     t: i64,                     // Plaintext modulus
-    poly_mod: &Polynomial<i64>,  // Polynomial modulus
-    pt: &Polynomial<i64>,        // Plaintext polynomial
+    f: &Polynomial<i64>,  // Polynomial modulus
+    m: &Polynomial<i64>,        // Plaintext polynomial
 ) -> (Polynomial<i64>, Polynomial<i64>) {
-    // Scale the plaintext polynomial
-    let delta = q / t;
-    let scaled_m = mod_coeffs(pt * delta, q);
+    // Scale the plaintext polynomial. use floor(m*q/t) rather than floor (q/t)*m
+    let scaled_m = mod_coeffs(m * q / t, q);
 
     // Generate random polynomials
-    let e1 = gen_normal_poly(size);
-    let e2 = gen_normal_poly(size);
-    let u = gen_binary_poly(size);
+    let e1 = gen_normal_poly(n);
+    let e2 = gen_normal_poly(n);
+    let u = gen_binary_poly(n);
 
     // Compute ciphertext components
-    let ct0 = polyadd(&polyadd(&polymul(&pk[0], &u, q, poly_mod), &e1, q, poly_mod),&scaled_m,q,poly_mod);
-    let ct1 = polyadd(&polymul(&pk[1], &u, q, poly_mod), &e2, q, poly_mod);
+    let ct0 = polyadd(&polyadd(&polymul(&pk[0], &u, q, f), &e1, q, f),&scaled_m,q,f);
+    let ct1 = polyadd(&polymul(&pk[1], &u, q, f), &e2, q, f);
 
     (ct0, ct1)
 }
@@ -58,7 +57,7 @@ pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters)
     // Encrypt each integer message block
     let mut ciphertext_list: Vec<i64> = Vec::new();
     for message_block in message_blocks {
-        let ciphertext = encrypt(&pk, params.n, params.q, params.t, &params.poly_mod, &message_block);
+        let ciphertext = encrypt(&pk, params.n, params.q, params.t, &params.f, &message_block);
         ciphertext_list.extend(ciphertext.0.coeffs());
         ciphertext_list.extend(ciphertext.1.coeffs());
     }

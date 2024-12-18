@@ -23,7 +23,7 @@ fn main() {
             let mut poly_vec = vec![0i64;params.n+1];
             poly_vec[0] = 1;
             poly_vec[params.n] = 1;
-            params.poly_mod = Polynomial::new(poly_vec);
+            params.f = Polynomial::new(poly_vec);
         }
     }
 
@@ -69,28 +69,30 @@ fn main() {
             v
         });
         //generate the keypair
-        let keypair = keygen(params.n,params.q,&params.poly_mod);
+        let keypair = keygen(params.n,params.q,&params.f);
         //get public and secret keys
         let pk = keypair.0;
         let sk = keypair.1;
         //encrypt plaintext messages
-        let u = encrypt(&pk,params.n,params.q,params.t,&params.poly_mod,&m0_poly);
-        let v = encrypt(&pk,params.n,params.q,params.t,&params.poly_mod,&m1_poly);
+        let u = encrypt(&pk,params.n,params.q,params.t,&params.f,&m0_poly);
+        let v = encrypt(&pk,params.n,params.q,params.t,&params.f,&m1_poly);
         //compute sum of encrypted data
         let ciphertext_sum = [&u.0 + &v.0, &u.1 + &v.1];
         //compute product of encrypted data, using non-standard multiplication
-        let c0 = polymul(&v.0,&v.1,params.q,&params.poly_mod);
-        let u0v1 = &polymul(&u.0,&v.1,params.q,&params.poly_mod);
-        let u1v0 = &polymul(&u.1,&v.0,params.q,&params.poly_mod);
-        let c1 = polyinv(&polyadd(u0v1,u1v0,params.q,&params.poly_mod),params.q);
-        let c2 = polymul(&u.0,&u.1,params.q,&params.poly_mod);
+        let c0 = polymul(&v.0,&v.1,params.q,&params.f);
+        let u0v1 = &polymul(&u.0,&v.1,params.q,&params.f);
+        let u1v0 = &polymul(&u.1,&v.0,params.q,&params.f);
+        let c1 = polyinv(&polyadd(u0v1,u1v0,params.q,&params.f),params.q);
+        let c2 = polymul(&u.0,&u.1,params.q,&params.f);
         let c = (c0, c1, c2);
-        //decrypt encrypted sum
-        let decrypted_sum = decrypt(&sk,params.n,params.q,params.t,&params.poly_mod,&ciphertext_sum);
+        //decrypt ciphertext sum u+v
+        let decrypted_sum = decrypt(&sk,params.n,params.q,params.t,&params.f,&ciphertext_sum);
         //decrypt product using relinearization
-        let delta = params.q as f64 / params.t as f64;
-        //let decrypted_product = decrypt(&sk,params.n,params.q,params.t,&params.poly_mod,&c_prod);
-        let ciphertext_prod = polyadd(&polyadd(&c.0,&polymul(&c.1,&sk,params.q,&params.poly_mod),params.q,&params.poly_mod),&polymul(&polymul(&c.2,&sk,params.q,&params.poly_mod),&sk,params.q,&params.poly_mod),params.q,&params.poly_mod);
+        let delta = params.q / params.t;
+        //compute c0 + c1*s + c2*s*s
+        let c1s = &polymul(&c.1,&sk,params.q,&params.f);
+        let c2s_squared = &polymul(&polymul(&c.2,&sk,params.q,&params.f),&sk,params.q,&params.f);
+        let ciphertext_prod = polyadd(&polyadd(&c.0,c1s,params.q,&params.f),c2s_squared,params.q,&params.f);
         //let scalar = mod_inverse(delta * delta, params.q).unwrap() as i64;
         let scalar = 1.0 / ((delta * delta) as f64);
         let scaled_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| (coeff as f64 * scalar) as i64).collect::<Vec<_>>()),params.q);
