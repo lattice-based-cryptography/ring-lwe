@@ -2,7 +2,11 @@ use polynomial_ring::Polynomial;
 use ring_lwe::{Parameters, polymul, polyadd, polyinv, gen_binary_poly, gen_uniform_poly, gen_normal_poly};
 use std::collections::HashMap;
 
-pub fn keygen(n: usize, q: i64, f: &Polynomial<i64>) -> ([Polynomial<i64>; 2], Polynomial<i64>) {
+pub fn keygen(params: &Parameters) -> ([Polynomial<i64>; 2], Polynomial<i64>) {
+
+    //rename parameters
+    let (n, q, f) = (params.n, params.q, &params.f);
+
     // Generate a public and secret key
     let sk = gen_binary_poly(n);
     let a = gen_uniform_poly(n, q);
@@ -16,7 +20,7 @@ pub fn keygen(n: usize, q: i64, f: &Polynomial<i64>) -> ([Polynomial<i64>; 2], P
 pub fn keygen_string(params: &Parameters) -> HashMap<String,String> {
 
     // generate keys using parameters
-    let (pk, sk) = keygen(params.n, params.q , &params.f);
+    let (pk, sk) = keygen(params);
 
     let mut pk_coeffs: Vec<i64> = Vec::with_capacity(2*params.n);
     pk_coeffs.extend(pk[0].coeffs());

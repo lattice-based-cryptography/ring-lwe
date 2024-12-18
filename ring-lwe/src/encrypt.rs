@@ -3,12 +3,10 @@ use ring_lwe::{Parameters, mod_coeffs, polymul, polyadd, gen_binary_poly, gen_no
 
 pub fn encrypt(
     pk: &[Polynomial<i64>; 2],    // Public key (b, a)
-    n: usize,                // Polynomial size
-    q: i64,                     // Ciphertext modulus
-    t: i64,                     // Plaintext modulus
-    f: &Polynomial<i64>,  // Polynomial modulus
     m: &Polynomial<i64>,        // Plaintext polynomial
+    params: &Parameters         //parameters (n,q,t,f)
 ) -> (Polynomial<i64>, Polynomial<i64>) {
+    let (n,q,t,f) = (params.n, params.q, params.t, &params.f);
     // Scale the plaintext polynomial. use floor(m*q/t) rather than floor (q/t)*m
     let scaled_m = mod_coeffs(m * q / t, q);
 
@@ -57,7 +55,7 @@ pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters)
     // Encrypt each integer message block
     let mut ciphertext_list: Vec<i64> = Vec::new();
     for message_block in message_blocks {
-        let ciphertext = encrypt(&pk, params.n, params.q, params.t, &params.f, &message_block);
+        let ciphertext = encrypt(&pk, &message_block, &params);
         ciphertext_list.extend(ciphertext.0.coeffs());
         ciphertext_list.extend(ciphertext.1.coeffs());
     }

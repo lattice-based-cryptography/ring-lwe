@@ -70,13 +70,13 @@ fn main() {
             v
         });
         //generate the keypair
-        let keypair = keygen(n,q,&f);
+        let keypair = keygen(&params);
         //get public and secret keys
         let pk = keypair.0;
         let sk = keypair.1;
         //encrypt plaintext messages
-        let u = encrypt(&pk,n,q,t,&f,&m0_poly);
-        let v = encrypt(&pk,n,q,t,&f,&m1_poly);
+        let u = encrypt(&pk,&m0_poly,&params);
+        let v = encrypt(&pk,&m1_poly,&params);
         //compute sum of encrypted data
         let ciphertext_sum = [&u.0 + &v.0, &u.1 + &v.1];
         //compute product of encrypted data, using non-standard multiplication
@@ -87,7 +87,7 @@ fn main() {
         let c2 = polymul(&u.0,&u.1,q,&f);
         let c = (c0, c1, c2);
         //decrypt ciphertext sum u+v
-        let decrypted_sum = decrypt(&sk,n,q,t,&f,&ciphertext_sum);
+        let decrypted_sum = decrypt(&sk,&ciphertext_sum,&params);
         //compute c0 + c1*s + c2*s*s
         let c1_sk = &polymul(&c.1,&sk,q,&f);
         let c2_sk_squared = &polymul(&polymul(&c.2,&sk,q,&f),&sk,q,&f);

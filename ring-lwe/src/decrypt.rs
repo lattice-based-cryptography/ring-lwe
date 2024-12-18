@@ -3,12 +3,10 @@ use ring_lwe::{Parameters, polymul, polyadd};
 
 pub fn decrypt(
     sk: &Polynomial<i64>,    // Secret key
-    n: usize,                // Polynomial size
-    q: i64,                     // Ciphertext modulus
-    t: i64,                     // Plaintext modulus
-    f: &Polynomial<i64>,  // Polynomial modulus
     ct: &[Polynomial<i64>; 2],        // Array of ciphertext polynomials
+    params: &Parameters
 ) -> Polynomial<i64> {
+    let (n,q,t,f) = (params.n, params.q, params.t, &params.f);
 	let scaled_pt = polyadd(&polymul(&ct[1], sk, q, f),&ct[0], q, f);
 	let mut decrypted_coeffs = vec![];
 	let mut s;
@@ -43,7 +41,7 @@ pub fn decrypt_string(sk_string: &String, ciphertext_string: &String, params: &P
         let ct = [c0, c1];
 
         // Decrypt the ciphertext
-        let decrypted_poly = decrypt(&sk, params.n, params.q, params.t, &params.f, &ct);
+        let decrypted_poly = decrypt(&sk, &ct, &params);
 
         // Convert the coefficients to characters and append to the message
         decrypted_message.push_str(
