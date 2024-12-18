@@ -42,8 +42,8 @@ fn main() {
         let ciphertext_string = encrypt_string(&pk_string,message_string,&params);
         let decrypted_message = decrypt_string(&sk_string,&ciphertext_string,&params);
         let test_passed = *message_string == decrypted_message;
-        println!("{} =? {}",*message_string,decrypted_message);
-        println!("{}",test_passed);
+        debug_assert!(test_passed, "test failed: {} != {}", *message_string, decrypted_message);
+        println!("test passed");
     }
 
     //test (partially) homomorphic property on two integers
