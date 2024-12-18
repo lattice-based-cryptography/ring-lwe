@@ -89,19 +89,21 @@ fn main() {
         //decrypt ciphertext sum u+v
         let decrypted_sum = decrypt(&sk,n,q,t,&f,&ciphertext_sum);
         //compute c0 + c1*s + c2*s*s
-        let c1s = &polymul(&c.1,&sk,q,&f);
-        let c2s_squared = &polymul(&polymul(&c.2,&sk,q,&f),&sk,q,&f);
-        let ciphertext_prod = polyadd(&polyadd(&c.0,c1s,q,&f),c2s_squared,q,&f);
-        //let delta = q / t, divide by 1 / delta^2
+        let c1_sk = &polymul(&c.1,&sk,q,&f);
+        let c2_sk_squared = &polymul(&polymul(&c.2,&sk,q,&f),&sk,q,&f);
+        let ciphertext_prod = polyadd(&polyadd(&c.0,c1_sk,q,&f),c2_sk_squared,q,&f);
+        //let delta = q / t, divide coeffs by 1 / delta^2
         let delta = q / t;
         let scaled_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| (coeff as f64 / (delta * delta) as f64) as i64).collect::<Vec<_>>()),q);
-        //print plaintext sum/product v. decrypted sum/products
+        
+        //print results
         println!("input polys m1={:?} m2={:?}",m0_poly, m1_poly);
-        println!("delta = {}",delta);
-        println!("delta^2 = {}",delta * delta);
         println!("plaintext sum = {}", m0_int + m1_int);
         println!("decrypted_sum = {}",decrypted_sum);
+        println!("delta = {}",delta);
+        println!("delta^2 = {}",delta * delta);
         println!("plaintext product = {}", m0_int * m1_int);
+        println!("ciphertext_prod = {:?}",ciphertext_prod);
         println!("scaled_product = {:?}",scaled_prod);
     }
 

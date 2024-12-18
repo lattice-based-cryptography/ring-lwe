@@ -22,7 +22,7 @@ pub fn keygen(
 pub fn keygen_string(params: &Parameters) -> HashMap<String, String> {
 
     //get parameters
-    let (n, k, q, f) = (params.n, params.k, params.q, &params.f);
+    let (n, q, k, f) = (params.n, params.q, params.k, &params.f);
 
     //generate public, secret keys
     let (a,t,sk) = keygen(n,q as i64,k,&f);

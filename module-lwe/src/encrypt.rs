@@ -31,7 +31,7 @@ pub fn encrypt(
 pub fn encrypt_string(pk_string: &String, message_string: &String, params: &Parameters) -> String {
 
     //get parameters
-    let (n, k, q, f) = (params.n, params.k, params.q, &params.f);
+    let (n, q, k, f) = (params.n, params.q, params.k, &params.f);
 
     // Randomly generated values for r, e1, and e2
     let r = gen_small_vector(n, k);
