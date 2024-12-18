@@ -94,7 +94,7 @@ fn main() {
         let ciphertext_prod = polyadd(&polyadd(&c.0,c1_sk,q,&f),c2_sk_squared,q,&f);
         //let delta = q / t, divide coeffs by 1 / delta^2
         let delta = q / t;
-        let scaled_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| (coeff as f64 / (delta * delta) as f64) as i64).collect::<Vec<_>>()),q);
+        let scaled_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| coeff / (delta * delta) ).collect::<Vec<_>>()),q);
         
         //print results
         println!("input polys m1={:?} m2={:?}",m0_poly, m1_poly);
@@ -104,7 +104,7 @@ fn main() {
         println!("delta = {}",delta);
         println!("delta^2 = {}",delta * delta);
         println!("plaintext product = {}", m0_int * m1_int);
-        println!("ciphertext_prod = {:?}",ciphertext_prod);
+        //println!("ciphertext_prod = {:?}",ciphertext_prod);
         println!("scaled_product = {:?}",scaled_prod);
     }
 
