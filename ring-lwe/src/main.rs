@@ -33,7 +33,7 @@ fn main() {
     let method = if args.len() > 1 {&args[1]} else {""};
 
     //perform a basis keygen/encrypt/decrypt test on single message
-    if method == "test" {
+    if method == "test_basic" {
         if args.len() != 3 && args.len() != 7 {
             println!("Usage: cargo run -- test <message>");
             return;
