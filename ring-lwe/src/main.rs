@@ -6,7 +6,6 @@ mod test;
 use crate::keygen::keygen_string;
 use crate::encrypt::encrypt_string;
 use crate::decrypt::decrypt_string;
-use crate::test::{test_basic,test_hom_add,test_hom_prod};
 use std::env;
 use ring_lwe::Parameters;
 use polynomial_ring::Polynomial;
@@ -31,38 +30,6 @@ fn main() {
     }
 
     let method = if args.len() > 1 {&args[1]} else {""};
-
-    //perform a basis keygen/encrypt/decrypt test on single message
-    if method == "test_basic" {
-        if args.len() != 3 && args.len() != 7 {
-            println!("Usage: cargo run -- test <message>");
-            return;
-        }
-        let message = &args[2];
-        test_basic(message,&params);
-    }
-
-    //test (partially) homomorphic property on two integers
-    if method == "test_hom_add" {
-        if args.len() != 4 && args.len() != 8 {
-            println!("Usage: cargo run -- test <message_0> <message_1>");
-            return;
-        }
-        let m0_string = &args[2];
-        let m1_string = &args[3];
-        test_hom_add(m0_string, m1_string, &params);
-    }
-
-    //test (partially) homomorphic property on two integers
-    if method == "test_hom_prod" {
-        if args.len() != 4 && args.len() != 8 {
-            println!("Usage: cargo run -- test <message_0> <message_1>");
-            return;
-        }
-        let m0_string = &args[2];
-        let m1_string = &args[3];
-        test_hom_prod(m0_string, m1_string, &params);
-    }
 
     //generate public and secret keys (parameters optional)
     if method == "keygen"{
