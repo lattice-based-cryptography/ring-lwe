@@ -82,19 +82,19 @@ pub  fn test_hom_prod(m0: &String, m1: &String, params: &Parameters) {
     //compute plaintext product
     let plaintext_prod = &m0_poly * &m1_poly;
     //compute product of encrypted data, using non-standard multiplication
-    let c0 = polymul(&v.0,&v.1,q,&f);
-    let u0v1 = &polymul(&u.0,&v.1,q,&f);
-    let u1v0 = &polymul(&u.1,&v.0,q,&f);
-    let c1 = polyinv(&polyadd(u0v1,u1v0,q,&f),q);
-    let c2 = polymul(&u.0,&u.1,q,&f);
+    let c0 = polymul(&u.0,&v.0,q*q,&f);
+    let u0v1 = &polymul(&u.0,&v.1,q*q,&f);
+    let u1v0 = &polymul(&u.1,&v.0,q*q,&f);
+    let c1 = polyadd(u0v1,u1v0,q*q,&f);
+    let c2 = polymul(&u.1,&v.1,q*q,&f);
     let c = (c0, c1, c2);
     //compute c0 + c1*s + c2*s*s
-    let c1_sk = &polymul(&c.1,&sk,q,&f);
-    let c2_sk_squared = &polymul(&polymul(&c.2,&sk,q,&f),&sk,q,&f);
-    let ciphertext_prod = polyadd(&polyadd(&c.0,c1_sk,q,&f),c2_sk_squared,q,&f);
+    let c1_sk = &polymul(&c.1,&sk,q*q,&f);
+    let c2_sk_squared = &polymul(&polymul(&c.2,&sk,q*q,&f),&sk,q*q,&f);
+    let ciphertext_prod = polyadd(&polyadd(&c.0,c1_sk,q*q,&f),c2_sk_squared,q*q,&f);
     //let delta = q / t, divide coeffs by 1 / delta^2
     let delta = q / t;
-    let decrypted_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| coeff / (delta * delta) ).collect::<Vec<_>>()),q);
+    let decrypted_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| (coeff+(delta*delta)/2) / (delta * delta) ).collect::<Vec<_>>()),t);
     
     //print results
     println!("input polys m1={:?} m2={:?}",m0_poly, m1_poly);
