@@ -18,7 +18,8 @@ To build the binary.
 
 `cargo test`
 
-Performs keygen/encrypt/decrypt for a test message. Checks homomorphic addition and multiplcation hold for test summands and multiplicands.
+- Performs keygen/encrypt/decrypt for a test message.
+- Checks homomorphic addition and multiplcation hold for small values.
 
 _Note_: Parameters optional via 
 
