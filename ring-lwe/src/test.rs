@@ -1,6 +1,5 @@
 #[cfg(test)]  // This makes the following module compile only during tests
 mod tests {
-    //use super::*;
     use crate::keygen::{keygen, keygen_string};
     use crate::encrypt::{encrypt, encrypt_string};
     use crate::decrypt::{decrypt, decrypt_string};
