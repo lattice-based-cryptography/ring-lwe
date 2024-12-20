@@ -11,8 +11,8 @@ pub struct Parameters {
 
 impl Default for Parameters {
     fn default() -> Self {
-        let n = 256;
-        let q = 1048576;
+        let n = 32;
+        let q = 4_194_304;
         let t = 256;
         let mut poly_vec = vec![0i64;n+1];
         poly_vec[0] = 1;
@@ -131,4 +131,13 @@ pub fn gen_normal_poly(size: usize) -> Polynomial<i64> {
 		coeffs[i] = normal.sample(&mut rng).round() as i64;
 	}
 	Polynomial::new(coeffs)
+}
+
+pub fn nearest_int(a: i64, b: i64) -> i64 {
+    //Returns the nearest integer to a/b
+    //Args: i64 a, i64 b
+    //Returns: i64 \lfloor a/b + 0.5 \rfloor
+
+    (a as f64 / b as f64).round() as i64
+
 }
