@@ -32,20 +32,11 @@ If ommitted, the default parameters will be used.
 
 This will generate a public/secret keypair. 
 
-- ring-LWE: The public key is the concatenated coefficients of two polynomials of degree `n`. The secret key is the coefficients of a binary polynomial of degree `n`.
-- module-LWE: The public key is a `k`x`k` matrix of polynomials of degree `n` and a `k`-vector of polynomials of degree `n`. The secret key is a `k`-vector of polynomials of degree `n`.
-
 `cargo run -- encrypt <public_key> <message>`
 
 Generates the ciphertext.
 
-- ring-LWE: the coefficients of two polynomials of degree `n`
-- module-LWE: a vector of polynomials of degree `n`, and a polynomial of degree `n`
-
 `cargo run -- decrypt <secret_key> <ciphertext>`
 
 Decrypts the ciphertext given a secret key, printing the plaintext message.
-
-- ring-LWE: secret key specified by the coefficients of a binary polynomial
-- module-LWE: secret key specified by vector of "small" polynomials with coefficients in {-1,0,1}
 
