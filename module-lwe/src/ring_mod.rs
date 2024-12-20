@@ -1,5 +1,7 @@
 use polynomial_ring::Polynomial;
 use rand_distr::{Uniform, Distribution};
+use rand::SeedableRng;
+use rand::rngs::StdRng;
 
 pub fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
 	//Take remainder of the coefficients of a polynom by a given modulus
@@ -65,14 +67,17 @@ pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, poly_m
 	polyadd(x, &polyinv(y, modulus), modulus, poly_mod)
 }
 
-pub fn gen_uniform_poly(size: usize, modulus: i64) -> Polynomial<i64> {
+pub fn gen_uniform_poly(size: usize, q: i64, seed: Option<u64>) -> Polynomial<i64> {
     //Generates a polynomial with coeffecients being integers in Z_modulus
     //Args:
     //	size: number of coeffcients
     //Returns:
     //	polynomial of degree size-1
-	let between = Uniform::new(0,modulus);
-	let mut rng = rand::thread_rng();
+	let between = Uniform::new(0,q);
+	let mut rng = match seed {
+        Some(seed) => StdRng::seed_from_u64(seed),
+        None => StdRng::from_entropy(),
+    };
     let mut coeffs = vec![0i64;size];
 	for i in 0..size {
 		coeffs[i] = between.sample(&mut rng);
