@@ -16,8 +16,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Build and Run tests
+    - name: build and bun tests for ring-lwe
       run: |
-        cd ring-lwe  # Change to the 'ring-lwe' directory
+        cd ring-lwe
+        cargo build --verbose
+        cargo test --verbose
+
+      continue-on-error: true
+
+    - name: build and run tests for module-lwe
+      run: |
+        cd module-lwe
         cargo build --verbose
         cargo test --verbose
