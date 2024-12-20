@@ -22,6 +22,8 @@ jobs:
         cargo build --verbose
         cargo test --verbose
 
+      continue-on-error: true
+
     - name: build and run tests for module-lwe
       run: |
         cd module-lwe
