@@ -16,6 +16,10 @@ Lattice-based encryption methods (ring-LWE, module-LWE) in pure Rust.
 
 To build the binary.
 
+`cargo test`
+
+Performs keygen/encrypt/decrypt for a test message. Checks homomorphic addition and multiplcation hold for test summands and multiplicands.
+
 _Note_: Parameters optional via 
 
 - `--params <n> <q> <t>` for ring-LWE
@@ -44,6 +48,3 @@ Decrypts the ciphertext given a secret key, printing the plaintext message.
 - ring-LWE: secret key specified by the coefficients of a binary polynomial
 - module-LWE: secret key specified by vector of "small" polynomials with coefficients in {-1,0,1}
 
-`cargo test`
-
-Performs keygen/encrypt/decrypt for a test message. Checks homomorphic addition and multiplcation hold for test summands and multiplicands.
