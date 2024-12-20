@@ -53,5 +53,5 @@ pub fn decrypt_string(sk_string: &String, ciphertext_string: &String, params: &P
         );
     }
 
-    decrypted_message
+    decrypted_message.trim_end_matches('\0').to_string()
 }

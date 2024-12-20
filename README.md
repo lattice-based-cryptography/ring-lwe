@@ -1,4 +1,7 @@
 # lattice-based-rust
+
+![example workflow](https://github.com/jacksonwalters/lattice-based-rust/actions/workflows/basic.yml/badge.svg)
+
 Lattice-based encryption methods (ring-LWE, module-LWE) in pure Rust.
 
 **Description**: This provides the basic PKE (keygen, encryption, and decryption) operations for the ring learning-with-errors and module learning-with-errors scheme.
@@ -13,6 +16,10 @@ Lattice-based encryption methods (ring-LWE, module-LWE) in pure Rust.
 
 To build the binary.
 
+`cargo test`
+
+Performs keygen/encrypt/decrypt for a test message. Checks homomorphic addition and multiplcation hold for test summands and multiplicands.
+
 _Note_: Parameters optional via 
 
 - `--params <n> <q> <t>` for ring-LWE
@@ -24,23 +31,11 @@ If ommitted, the default parameters will be used.
 
 This will generate a public/secret keypair. 
 
-- ring-LWE: The public key is the concatenated coefficients of two polynomials of degree `n`. The secret key is the coefficients of a binary polynomial of degree `n`.
-- module-LWE: The public key is a `k`x`k` matrix of polynomials of degree `n` and a `k`-vector of polynomials of degree `n`. The secret key is a `k`-vector of polynomials of degree `n`.
-
 `cargo run -- encrypt <public_key> <message>`
 
 Generates the ciphertext.
-
-- ring-LWE: the coefficients of two polynomials of degree `n`
-- module-LWE: a vector of polynomials of degree `n`, and a polynomial of degree `n`
 
 `cargo run -- decrypt <secret_key> <ciphertext>`
 
 Decrypts the ciphertext given a secret key, printing the plaintext message.
 
-- ring-LWE: secret key specified by the coefficients of a binary polynomial
-- module-LWE: secret key specified by vector of "small" polynomials with coefficients in {-1,0,1}
-
-`cargo run -- test <message>`
-
-Performs a keygen, encryption, decryption, and verifies the decrypted message is equal to the given message.
