@@ -1,5 +1,7 @@
 use polynomial_ring::Polynomial;
 use rand_distr::{Uniform, Normal, Distribution};
+use rand::SeedableRng;
+use rand::rngs::StdRng;
 
 #[derive(Debug)]
 pub struct Parameters {
@@ -87,14 +89,17 @@ pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : Po
 	polyadd(x, &polyinv(y, modulus), modulus, &f)
 }
 
-pub fn gen_binary_poly(size : usize) -> Polynomial<i64> {
+pub fn gen_binary_poly(size : usize, seed: Option<u64>) -> Polynomial<i64> {
     //Generates a polynomial with coeffecients in [0, 1]
     //Args:
     //	size: number of coeffcients
     //Returns:
     //	polynomial of degree size-1
 	let between = Uniform::new(0,2);
-    let mut rng = rand::thread_rng();
+    let mut rng = match seed {
+        Some(seed) => StdRng::seed_from_u64(seed),
+        None => StdRng::from_entropy(),
+    };
     let mut coeffs = vec![0i64;size];
 	for i in 0..size {
 		coeffs[i] = between.sample(&mut rng);
@@ -102,14 +107,17 @@ pub fn gen_binary_poly(size : usize) -> Polynomial<i64> {
 	Polynomial::new(coeffs)
 }
 
-pub fn gen_uniform_poly(size: usize, modulus: i64) -> Polynomial<i64> {
+pub fn gen_uniform_poly(size: usize, q: i64, seed: Option<u64>) -> Polynomial<i64> {
     //Generates a polynomial with coeffecients being integers in Z_modulus
     //Args:
     //	size: number of coeffcients
     //Returns:
     //	polynomial of degree size-1
-	let between = Uniform::new(0,modulus);
-	let mut rng = rand::thread_rng();
+	let between = Uniform::new(0,q);
+    let mut rng = match seed {
+        Some(seed) => StdRng::seed_from_u64(seed),
+        None => StdRng::from_entropy(),
+    };
     let mut coeffs = vec![0i64;size];
 	for i in 0..size {
 		coeffs[i] = between.sample(&mut rng);
@@ -117,7 +125,7 @@ pub fn gen_uniform_poly(size: usize, modulus: i64) -> Polynomial<i64> {
 	Polynomial::new(coeffs)
 }
 
-pub fn gen_normal_poly(size: usize) -> Polynomial<i64> {
+pub fn gen_normal_poly(size: usize, seed: Option<u64>) -> Polynomial<i64> {
     //Generates a polynomial with coeffecients in a normal distribution
     //of mean 0 and a standard deviation of 2, then discretize it.
     //Args:
@@ -125,7 +133,10 @@ pub fn gen_normal_poly(size: usize) -> Polynomial<i64> {
     //Returns:
     //	polynomial of degree size-1
 	let normal = Normal::new(0.0 as f64, 2.0 as f64).unwrap();
-	let mut rng = rand::thread_rng();
+    let mut rng = match seed {
+        Some(seed) => StdRng::seed_from_u64(seed),
+        None => StdRng::from_entropy(),
+    };
     let mut coeffs = vec![0i64;size];
 	for i in 0..size {
 		coeffs[i] = normal.sample(&mut rng).round() as i64;

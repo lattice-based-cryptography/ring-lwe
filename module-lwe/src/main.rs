@@ -35,7 +35,7 @@ fn main() {
             println!("Usage: cargo run -- keygen");
             return;
         }
-        let keypair = keygen_string(&params);
+        let keypair = keygen_string(&params,None);
         println!("{:?}", keypair);
     }
 
@@ -46,7 +46,7 @@ fn main() {
         }
         let pk_string = &args[2];
         let message_string = &args[3];
-        let ciphertext_string = encrypt_string(pk_string,message_string,&params);
+        let ciphertext_string = encrypt_string(pk_string,message_string,&params,None);
         println!("{}",ciphertext_string);
     }
 
