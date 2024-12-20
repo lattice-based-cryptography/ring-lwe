@@ -9,12 +9,13 @@ mod tests {
     // Test for basic keygen/encrypt/decrypt of a message
     #[test]
     pub fn test_basic() {
+        let seed = None; //set the random seed
         let message = String::from("hello");
         let params = Parameters::default();  // Adjust this if needed
-        let keypair = keygen_string(&params);
+        let keypair = keygen_string(&params,seed);
         let pk_string = keypair.get("public").unwrap();
         let sk_string = keypair.get("secret").unwrap();
-        let ciphertext_string = encrypt_string(&pk_string, &message, &params);
+        let ciphertext_string = encrypt_string(&pk_string, &message, &params,seed);
         let decrypted_message = decrypt_string(&sk_string, &ciphertext_string, &params);
         assert_eq!(message, decrypted_message, "test failed: {} != {}", message, decrypted_message);
     }
@@ -22,6 +23,8 @@ mod tests {
     // Test homomorphic addition property: ensure sum of encrypted plaintexts decrypts to plaintext sum
     #[test]
     pub fn test_hom_add() {
+
+        let seed = None; //set the random seed
         let params = Parameters::default();  // Adjust this if needed
 
         // Create polynomials from ints
@@ -37,13 +40,13 @@ mod tests {
         });
 
         let plaintext_sum = &m0_poly + &m1_poly;
-        let keypair = keygen(&params);
+        let keypair = keygen(&params,seed);
         let pk = keypair.0;
         let sk = keypair.1;
 
         // Encrypt plaintext messages
-        let u = encrypt(&pk, &m0_poly, &params);
-        let v = encrypt(&pk, &m1_poly, &params);
+        let u = encrypt(&pk, &m0_poly, &params, seed);
+        let v = encrypt(&pk, &m1_poly, &params, seed);
 
         // Compute sum of encrypted data
         let ciphertext_sum = [&u.0 + &v.0, &u.1 + &v.1];
@@ -57,6 +60,9 @@ mod tests {
     // Test homomorphic multiplication property: product of encrypted plaintexts should decrypt to plaintext product
     #[test]
     pub fn test_hom_prod() {
+
+        let seed = None; //set the random seed
+        let params = Parameters::default();  // Adjust this if needed
 
         let params = Parameters::default();
         let (n, q, t, f) = (params.n, params.q, params.t, &params.f);
@@ -72,12 +78,16 @@ mod tests {
             v[0] = 3;
             v
         });
-        //generate the keypair
-        let (pk, sk) = keygen(&params);
-        //encrypt plaintext messages
-        let u = encrypt(&pk,&m0_poly,&params);
-        let v = encrypt(&pk,&m1_poly,&params);
-        //compute plaintext product
+
+        // Generate the keypair
+        let keypair = keygen(&params,seed);
+        let pk = keypair.0;
+        let sk = keypair.1;
+
+        // Encrypt plaintext messages
+        let u = encrypt(&pk, &m0_poly, &params, seed);
+        let v = encrypt(&pk, &m1_poly, &params, seed);
+
         let plaintext_prod = &m0_poly * &m1_poly;
         //compute product of encrypted data, using non-standard multiplication
         let c0 = polymul(&u.0,&v.0,q*q,&f);

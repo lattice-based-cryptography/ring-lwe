@@ -10,7 +10,7 @@ pub fn encrypt(
     q: i64,
     r: &Vec<Polynomial<i64>>,
     e1: &Vec<Polynomial<i64>>,
-    e2: &Polynomial<i64>,
+    e2: &Polynomial<i64>
 ) -> (Vec<Polynomial<i64>>, Polynomial<i64>) {
     //compute nearest integer to q/2
     let half_q = (q as f64 / 2.0 + 0.5) as i64;
@@ -28,15 +28,15 @@ pub fn encrypt(
 }
 
 //function to encrypt a message given a public_key string
-pub fn encrypt_string(pk_string: &String, message_string: &String, params: &Parameters) -> String {
+pub fn encrypt_string(pk_string: &String, message_string: &String, params: &Parameters, seed: Option<u64>) -> String {
 
     //get parameters
     let (n, q, k, f) = (params.n, params.q, params.k, &params.f);
 
     // Randomly generated values for r, e1, and e2
-    let r = gen_small_vector(n, k);
-    let e1 = gen_small_vector(n, k);
-    let e2 = gen_small_vector(n, 1)[0].clone(); // Single polynomial
+    let r = gen_small_vector(n, k, seed);
+    let e1 = gen_small_vector(n, k, seed);
+    let e2 = gen_small_vector(n, 1, seed)[0].clone(); // Single polynomial
 
     // Parse public key
     

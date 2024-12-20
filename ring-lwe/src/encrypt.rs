@@ -4,16 +4,17 @@ use ring_lwe::{Parameters, mod_coeffs, polymul, polyadd, gen_binary_poly, gen_no
 pub fn encrypt(
     pk: &[Polynomial<i64>; 2],    // Public key (b, a)
     m: &Polynomial<i64>,        // Plaintext polynomial
-    params: &Parameters         //parameters (n,q,t,f)
+    params: &Parameters,       //parameters (n,q,t,f)
+    seed: Option<u64>            // Seed for random number generator
 ) -> (Polynomial<i64>, Polynomial<i64>) {
     let (n,q,t,f) = (params.n, params.q, params.t, &params.f);
     // Scale the plaintext polynomial. use floor(m*q/t) rather than floor (q/t)*m
     let scaled_m = mod_coeffs(m * q / t, q);
 
     // Generate random polynomials
-    let e1 = gen_normal_poly(n);
-    let e2 = gen_normal_poly(n);
-    let u = gen_binary_poly(n);
+    let e1 = gen_normal_poly(n, seed);
+    let e2 = gen_normal_poly(n, seed);
+    let u = gen_binary_poly(n, seed);
 
     // Compute ciphertext components
     let ct0 = polyadd(&polyadd(&polymul(&pk[0], &u, q, f), &e1, q, f),&scaled_m,q,f);
@@ -22,7 +23,7 @@ pub fn encrypt(
     (ct0, ct1)
 }
 
-pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters) -> String {
+pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters, seed: Option<u64>) -> String {
 
     // Get the public key from the string and format as two Polynomials
     let pk_arr: Vec<i64> = pk_string
@@ -55,7 +56,7 @@ pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters)
     // Encrypt each integer message block
     let mut ciphertext_list: Vec<i64> = Vec::new();
     for message_block in message_blocks {
-        let ciphertext = encrypt(&pk, &message_block, &params);
+        let ciphertext = encrypt(&pk, &message_block, &params, seed);
         ciphertext_list.extend(ciphertext.0.coeffs());
         ciphertext_list.extend(ciphertext.1.coeffs());
     }

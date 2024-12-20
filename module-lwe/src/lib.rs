@@ -1,5 +1,7 @@
 use polynomial_ring::Polynomial;
 use rand_distr::{Uniform, Distribution};
+use rand::SeedableRng;
+use rand::rngs::StdRng;
 pub mod ring_mod;
 use ring_mod::{polyadd, polymul, gen_uniform_poly};
 
@@ -15,7 +17,7 @@ impl Default for Parameters {
     fn default() -> Self {
         let n = 16;
         let q = 67;
-        let k = 32;
+        let k = 2;
         let mut poly_vec = vec![0i64;n+1];
         poly_vec[0] = 1;
         poly_vec[n] = 1;
@@ -72,13 +74,16 @@ pub fn transpose(m: &Vec<Vec<Polynomial<i64>>>) -> Vec<Vec<Polynomial<i64>>> {
 	result
 }
 
-pub fn gen_small_vector(size : usize, rank: usize) -> Vec<Polynomial<i64>> {
+pub fn gen_small_vector(size : usize, rank: usize, seed: Option<u64>) -> Vec<Polynomial<i64>> {
 	//generates a vector of given rank of degree size-1 polynomials
 	//with coefficients in [-1,0,1]
 	
 	let mut v = vec![];
 	let between = Uniform::new(0,3);
-    let mut rng = rand::thread_rng();
+	let mut rng = match seed {
+        Some(seed) => StdRng::seed_from_u64(seed),
+        None => StdRng::from_entropy(),
+    };
     let mut coeffs = vec![0i64;size];
 	for _i in 0..rank {
 		for j in 0.. size {
@@ -89,14 +94,14 @@ pub fn gen_small_vector(size : usize, rank: usize) -> Vec<Polynomial<i64>> {
 	v
 }
 
-pub fn gen_uniform_matrix(size : usize, rank: usize, modulus: i64) -> Vec<Vec<Polynomial<i64>>> {
+pub fn gen_uniform_matrix(size : usize, rank: usize, modulus: i64, seed: Option<u64>) -> Vec<Vec<Polynomial<i64>>> {
 	//generates a rank by rank matrix of degree size-1 polynomials
 	//with uniform coefficients in Z_modulus
 	
 	let mut m = vec![vec![Polynomial::new(vec![]); rank]; rank];
 	for i in 0..rank {
 		for j in 0..rank {
-			m[i][j] = gen_uniform_poly(size, modulus);
+			m[i][j] = gen_uniform_poly(size, modulus, seed);
 		}
 	}
 	m

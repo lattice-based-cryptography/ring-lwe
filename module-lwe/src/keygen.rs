@@ -6,12 +6,13 @@ pub fn keygen(
 	size: usize, //polynomial modulus degree
 	modulus: i64, //ciphertext modulus
 	rank: usize, //module rank
-	poly_mod: &Polynomial<i64> //polynomial modulus
+	poly_mod: &Polynomial<i64>, //polynomial modulus
+    seed: Option<u64> //random seed
 ) -> (Vec<Vec<Polynomial<i64>>>, Vec<Polynomial<i64>>, Vec<Polynomial<i64>>) {
     //Generate a public and secret key
-    let a = gen_uniform_matrix(size, rank, modulus);
-    let sk = gen_small_vector(size, rank);
-    let e = gen_small_vector(size, rank);
+    let a = gen_uniform_matrix(size, rank, modulus, seed);
+    let sk = gen_small_vector(size, rank, seed);
+    let e = gen_small_vector(size, rank, seed);
     let t = add_vec(&mul_mat_vec_simple(&a, &sk, modulus, &poly_mod), &e, modulus, &poly_mod);
     
     //Return public key (a, t) and secret key (sk) as a 3-tuple
@@ -19,13 +20,13 @@ pub fn keygen(
 }
 
 //function to generate public/secret keys as key:value pairs
-pub fn keygen_string(params: &Parameters) -> HashMap<String, String> {
+pub fn keygen_string(params: &Parameters, seed: Option<u64>) -> HashMap<String, String> {
 
     //get parameters
     let (n, q, k, f) = (params.n, params.q, params.k, &params.f);
 
     //generate public, secret keys
-    let (a,t,sk) = keygen(n,q as i64,k,&f);
+    let (a,t,sk) = keygen(n,q as i64,k,&f,seed);
     let pk = (a,t);
 
     // Convert public key to a flattened list of coefficients
