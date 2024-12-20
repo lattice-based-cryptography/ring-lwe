@@ -1,4 +1,7 @@
 # lattice-based-rust
+
+![example workflow](https://github.com/jacksonwalters/lattice-based-rust/actions/workflows/basic.yml/badge.svg)
+
 Lattice-based encryption methods (ring-LWE, module-LWE) in pure Rust.
 
 **Description**: This provides the basic PKE (keygen, encryption, and decryption) operations for the ring learning-with-errors and module learning-with-errors scheme.
