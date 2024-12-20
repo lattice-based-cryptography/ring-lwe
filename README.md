@@ -41,6 +41,6 @@ Decrypts the ciphertext given a secret key, printing the plaintext message.
 - ring-LWE: secret key specified by the coefficients of a binary polynomial
 - module-LWE: secret key specified by vector of "small" polynomials with coefficients in {-1,0,1}
 
-`cargo run -- test <message>`
+`cargo test`
 
-Performs a keygen, encryption, decryption, and verifies the decrypted message is equal to the given message.
+Performs keygen/encrypt/decrypt for a test message. Checks homomorphic addition and multiplcation hold for test summands and multiplicands.
