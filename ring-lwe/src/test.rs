@@ -62,7 +62,6 @@ mod tests {
     pub fn test_hom_prod() {
 
         let seed = None; //set the random seed
-        let params = Parameters::default();  // Adjust this if needed
 
         let params = Parameters::default();
         let (n, q, t, f) = (params.n, params.q, params.t, &params.f);
