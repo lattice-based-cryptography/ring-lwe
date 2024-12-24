@@ -40,9 +40,7 @@ mod tests {
         });
 
         let plaintext_sum = &m0_poly + &m1_poly;
-        let keypair = keygen(&params,seed);
-        let pk = keypair.0;
-        let sk = keypair.1;
+        let (pk, sk) = keygen(&params,seed);
 
         // Encrypt plaintext messages
         let u = encrypt(&pk, &m0_poly, &params, seed);
@@ -62,7 +60,6 @@ mod tests {
     pub fn test_hom_prod() {
 
         let seed = None; //set the random seed
-
         let params = Parameters::default();
         let (n, q, t, f) = (params.n, params.q, params.t, &params.f);
 
@@ -79,9 +76,7 @@ mod tests {
         });
 
         // Generate the keypair
-        let keypair = keygen(&params,seed);
-        let pk = keypair.0;
-        let sk = keypair.1;
+        let (pk, sk) = keygen(&params,seed);
 
         // Encrypt plaintext messages
         let u = encrypt(&pk, &m0_poly, &params, seed);
