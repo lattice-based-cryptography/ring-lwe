@@ -1,4 +1,4 @@
-# lattice-based-rust
+# ring-LWE, module-LWE
 
 ![example workflow](https://github.com/jacksonwalters/lattice-based-rust/actions/workflows/basic.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
