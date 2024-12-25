@@ -18,7 +18,6 @@ jobs:
 
     - name: build and bun tests for ring-lwe
       run: |
-        cd ring-lwe
         cargo build --verbose
         cargo test --verbose
 
