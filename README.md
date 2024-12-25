@@ -25,7 +25,8 @@ To build the binary.
 _Note_: Parameters optional via 
 
 - `--params <n> <q> <t>` for ring-LWE
-- `--params <n> <q> <k>` for module-LWE.
+
+where `n` is the polynomial degree, `q` is the ciphertext modulus, `t` is the plaintext modulus.
 
 If ommitted, the default parameters will be used.
 
