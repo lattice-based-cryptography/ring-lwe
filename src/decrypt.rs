@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{Parameters, polymul, polyadd};
+use ring_lwe::{Parameters, polymul, polyadd, nearest_int};
 
 pub fn decrypt(
     sk: &Polynomial<i64>,    // Secret key
@@ -10,9 +10,9 @@ pub fn decrypt(
 	let scaled_pt = polyadd(&polymul(&ct[1], sk, q, f),&ct[0], q, f);
 	let mut decrypted_coeffs = vec![];
 	let mut s;
-	for i in 0..scaled_pt.coeffs().len() {
-		s = (scaled_pt.coeffs()[i] as f64) * (t as f64) / (q as f64);
-		decrypted_coeffs.push(s.round() as i64 % t);
+	for c in scaled_pt.coeffs().iter() {
+		s = nearest_int(c*t,q) % t;
+		decrypted_coeffs.push(s);
 	}
     Polynomial::new(decrypted_coeffs)
 }
