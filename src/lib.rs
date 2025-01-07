@@ -14,7 +14,7 @@ pub struct Parameters {
 impl Default for Parameters {
     fn default() -> Self {
         let n = 16;
-        let q = 1073741824;
+        let q = 65536;
         let t = 512;
         let mut poly_vec = vec![0i64;n+1];
         poly_vec[0] = 1;
@@ -33,12 +33,17 @@ pub fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
 	//	polynomial in Z_modulus[X]
 	let coeffs = x.coeffs();
 	let mut newcoeffs = vec![];
+	let mut c;
 	if coeffs.len() == 0 {
 		// return original input for the zero polynomial
 		x
 	} else {
 		for i in 0..coeffs.len() {
-			newcoeffs.push(coeffs[i].rem_euclid(modulus));
+			c = coeffs[i].rem_euclid(modulus);
+			if c > modulus/2 {
+				c = c-modulus;
+			}
+			newcoeffs.push(c);
 		}
 		Polynomial::new(newcoeffs)
 	}
@@ -122,7 +127,7 @@ pub fn gen_uniform_poly(size: usize, q: i64, seed: Option<u64>) -> Polynomial<i6
 	for i in 0..size {
 		coeffs[i] = between.sample(&mut rng);
 	}
-	Polynomial::new(coeffs)
+	mod_coeffs(Polynomial::new(coeffs),q)
 }
 
 pub fn gen_normal_poly(size: usize, seed: Option<u64>) -> Polynomial<i64> {

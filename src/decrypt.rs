@@ -11,8 +11,8 @@ pub fn decrypt(
 	let mut decrypted_coeffs = vec![];
 	let mut s;
 	for c in scaled_pt.coeffs().iter() {
-		s = nearest_int(c*t,q) % t;
-		decrypted_coeffs.push(s);
+		s = nearest_int(c*t,q);
+		decrypted_coeffs.push(s.rem_euclid(t));
 	}
     Polynomial::new(decrypted_coeffs)
 }
