@@ -16,7 +16,7 @@ impl Default for Parameters {
     fn default() -> Self {
         let n = 16;
         let q = 1048576;
-        let t = 512;
+        let t = 256;
         let mut poly_vec = vec![0i64;n+1];
         poly_vec[0] = 1;
         poly_vec[n] = 1;

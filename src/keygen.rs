@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{Parameters, polymul, polyadd, polyinv, gen_binary_poly, gen_uniform_poly, gen_normal_poly};
+use ring_lwe::{Parameters, polymul, polyadd, polyinv, gen_uniform_poly, gen_normal_poly};
 use std::collections::HashMap;
 
 pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], Polynomial<i64>) {
@@ -8,7 +8,7 @@ pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], 
     let (n, q, f, sigma) = (params.n, params.q, &params.f, params.sigma);
 
     // Generate a public and secret key
-    let sk = gen_normal_poly(n,sigma, seed);
+    let sk = gen_normal_poly(n, sigma, seed);
     let a = gen_uniform_poly(n, q, seed);
     let e = gen_normal_poly(n, sigma, seed);
     let b = polyadd(&polymul(&polyinv(&a,q*q), &sk, q*q, &f), &polyinv(&e,q*q), q*q, &f);
