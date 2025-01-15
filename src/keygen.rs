@@ -5,12 +5,12 @@ use std::collections::HashMap;
 pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], Polynomial<i64>) {
 
     //rename parameters
-    let (n, q, f) = (params.n, params.q, &params.f);
+    let (n, q, f, sigma) = (params.n, params.q, &params.f, params.sigma);
 
     // Generate a public and secret key
-    let sk = gen_binary_poly(n,seed);
+    let sk = gen_normal_poly(n,sigma, seed);
     let a = gen_uniform_poly(n, q, seed);
-    let e = gen_normal_poly(n, seed);
+    let e = gen_normal_poly(n, sigma, seed);
     let b = polyadd(&polymul(&polyinv(&a,q*q), &sk, q*q, &f), &polyinv(&e,q*q), q*q, &f);
     
     // Return public key (b, a) as an array and secret key (sk)

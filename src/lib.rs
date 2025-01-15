@@ -9,18 +9,20 @@ pub struct Parameters {
     pub q: i64,       // Ciphertext modulus
     pub t: i64,       // Plaintext modulus
     pub f: Polynomial<i64>, // Polynomial modulus (x^n + 1 representation)
+    pub sigma: f64,    // Standard deviation for normal distribution
 }
 
 impl Default for Parameters {
     fn default() -> Self {
         let n = 16;
-        let q = 65536;
+        let q = 1048576;
         let t = 512;
         let mut poly_vec = vec![0i64;n+1];
         poly_vec[0] = 1;
         poly_vec[n] = 1;
         let f = Polynomial::new(poly_vec);
-        Parameters { n, q, t, f }
+        let sigma = 8.0;
+        Parameters { n, q, t, f, sigma}
     }
 }
 
@@ -130,14 +132,14 @@ pub fn gen_uniform_poly(size: usize, q: i64, seed: Option<u64>) -> Polynomial<i6
 	mod_coeffs(Polynomial::new(coeffs),q)
 }
 
-pub fn gen_normal_poly(size: usize, seed: Option<u64>) -> Polynomial<i64> {
+pub fn gen_normal_poly(size: usize, sigma: f64, seed: Option<u64>) -> Polynomial<i64> {
     //Generates a polynomial with coeffecients in a normal distribution
     //of mean 0 and a standard deviation of 2, then discretize it.
     //Args:
     //	size: number of coeffcients,
     //Returns:
     //	polynomial of degree size-1
-	let normal = Normal::new(0.0 as f64, 2.0 as f64).unwrap();
+	let normal = Normal::new(0.0 as f64, sigma).unwrap();
     let mut rng = match seed {
         Some(seed) => StdRng::seed_from_u64(seed),
         None => StdRng::from_entropy(),

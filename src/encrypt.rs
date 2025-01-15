@@ -7,13 +7,13 @@ pub fn encrypt(
     params: &Parameters,       //parameters (n,q,t,f)
     seed: Option<u64>            // Seed for random number generator
 ) -> (Polynomial<i64>, Polynomial<i64>) {
-    let (n,q,t,f) = (params.n, params.q, params.t, &params.f);
+    let (n,q,t,f,sigma) = (params.n, params.q, params.t, &params.f, params.sigma);
     // Scale the plaintext polynomial. use floor(m*q/t) rather than floor (q/t)*m
     let scaled_m = mod_coeffs(m * q / t, q);
 
     // Generate random polynomials
-    let e1 = gen_normal_poly(n, seed);
-    let e2 = gen_normal_poly(n, seed);
+    let e1 = gen_normal_poly(n, sigma, seed);
+    let e2 = gen_normal_poly(n, sigma, seed);
     let u = gen_binary_poly(n, seed);
 
     // Compute ciphertext components
