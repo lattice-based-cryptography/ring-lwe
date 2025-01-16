@@ -94,7 +94,6 @@ mod tests {
         let c1_sk = &polymul(&c.1,&sk,q*q,&f);
         let c2_sk_squared = &polymul(&polymul(&c.2,&sk,q*q,&f),&sk,q*q,&f);
         let ciphertext_prod = polyadd(&polyadd(&c.0,c1_sk,q*q,&f),c2_sk_squared,q*q,&f);
-        println!("ciphertext_prod: {:?}", ciphertext_prod);
         //let delta = q / t, divide coeffs by 1 / delta^2
         let delta = q / t;
         let decrypted_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| nearest_int(coeff,delta * delta) ).collect::<Vec<_>>()),t);
