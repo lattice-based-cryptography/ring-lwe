@@ -80,10 +80,15 @@ pub fn polyadd(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &P
 }
 
 pub fn polyinv(x : &Polynomial<i64>, modulus: i64) -> Polynomial<i64> {
-  //Additive inverse of polynomial x modulo modulus
-  let y = -x;
-  mod_coeffs(y, modulus)
-}
+    //Additive inverse of polynomial x modulo modulus
+    let y = -x;
+    if modulus != 0{
+      mod_coeffs(y, modulus)
+    }
+    else {
+      y
+    }
+  }
 
 pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : Polynomial<i64>) -> Polynomial<i64> {
     //Subtract two polynoms
