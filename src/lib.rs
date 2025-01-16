@@ -74,9 +74,13 @@ pub fn polyadd(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &P
     //Returns:
     //	polynomial in Z_modulus[X]/(f).
 	let mut r = x+y;
-	r = mod_coeffs(r, modulus);
-	r.division(f);
-	mod_coeffs(r, modulus)
+    r.division(f);
+    if modulus != 0 {
+        mod_coeffs(r, modulus)
+    }
+    else{
+        r
+    }
 }
 
 pub fn polyinv(x : &Polynomial<i64>, modulus: i64) -> Polynomial<i64> {
