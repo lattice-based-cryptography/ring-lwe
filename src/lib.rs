@@ -14,7 +14,7 @@ pub struct Parameters {
 
 impl Default for Parameters {
     fn default() -> Self {
-        let n = 16;
+        let n = 64;
         let q = 1048576;
         let t = 256;
         let mut poly_vec = vec![0i64;n+1];
@@ -103,6 +103,24 @@ pub fn gen_binary_poly(size : usize, seed: Option<u64>) -> Polynomial<i64> {
     //Returns:
     //	polynomial of degree size-1
 	let between = Uniform::new(0,2);
+    let mut rng = match seed {
+        Some(seed) => StdRng::seed_from_u64(seed),
+        None => StdRng::from_entropy(),
+    };
+    let mut coeffs = vec![0i64;size];
+	for i in 0..size {
+		coeffs[i] = between.sample(&mut rng);
+	}
+	Polynomial::new(coeffs)
+}
+
+pub fn gen_ternary_poly(size : usize, seed: Option<u64>) -> Polynomial<i64> {
+    //Generates a polynomial with coeffecients in [0, 1]
+    //Args:
+    //	size: number of coeffcients
+    //Returns:
+    //	polynomial of degree size-1 with coeffs in {-1,0,+1}
+	let between = Uniform::new(-1,2);
     let mut rng = match seed {
         Some(seed) => StdRng::seed_from_u64(seed),
         None => StdRng::from_entropy(),
