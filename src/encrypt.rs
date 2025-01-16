@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{Parameters, mod_coeffs, polymul, polyadd, gen_binary_poly, gen_normal_poly};
+use ring_lwe::{Parameters, mod_coeffs, polymul, polyadd, gen_ternary_poly};
 
 pub fn encrypt(
     pk: &[Polynomial<i64>; 2],    // Public key (b, a)
@@ -12,9 +12,9 @@ pub fn encrypt(
     let scaled_m = mod_coeffs(m * q / t, q);
 
     // Generate random polynomials
-    let e1 = gen_normal_poly(n, seed);
-    let e2 = gen_normal_poly(n, seed);
-    let u = gen_binary_poly(n, seed);
+    let e1 = gen_ternary_poly(n, seed);
+    let e2 = gen_ternary_poly(n, seed);
+    let u = gen_ternary_poly(n, seed);
 
     // Compute ciphertext components
     let ct0 = polyadd(&polyadd(&polymul(&pk[0], &u, q, f), &e1, q, f),&scaled_m,q,f);

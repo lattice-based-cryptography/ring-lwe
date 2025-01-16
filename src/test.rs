@@ -35,7 +35,7 @@ mod tests {
         });
         let m1_poly = Polynomial::new({
             let mut v = vec![0i64; params.n];
-            v[0] = 2;
+            v[0] = 3;
             v
         });
 
