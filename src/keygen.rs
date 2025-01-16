@@ -11,7 +11,7 @@ pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], 
     let sk = gen_ternary_poly(n, seed);
     let a = gen_ternary_poly(n, seed);
     let e = gen_ternary_poly(n, seed);
-    let b = polyadd(&polymul(&polyinv(&a,q*q), &sk, q*q, &f), &polyinv(&e,q*q), q*q, &f);
+    let b = polyadd(&polymul(&polyinv(&a,q), &sk, q, &f), &polyinv(&e,q), q, &f);
     
     // Return public key (b, a) as an array and secret key (sk)
     ([b, a], sk)
