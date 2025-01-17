@@ -17,8 +17,8 @@ pub fn encrypt(
     let u = gen_ternary_poly(n, seed);
 
     // Compute ciphertext components
-    let ct0 = polyadd(&polyadd(&polymul(&pk[0], &u, q, f), &e1, q, f),&scaled_m,q,f);
-    let ct1 = polyadd(&polymul(&pk[1], &u, q, f), &e2, q, f);
+    let ct0 = polyadd(&polyadd(&polymul(&pk[0], &u, q*q, f), &e1, q*q, f),&scaled_m,q*q,f);
+    let ct1 = polyadd(&polymul(&pk[1], &u, q*q, f), &e2, q*q, f);
 
     (ct0, ct1)
 }
