@@ -66,23 +66,97 @@ pub fn polyrem(x: Polynomial<i64>, f: &Polynomial<i64>) -> Polynomial<i64> {
 	}
 }
 
-pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
+pub fn polyrem(x: Polynomial<i64>, f: &Polynomial<i64>) -> Polynomial<i64> {
+	//Returns remainder of x modulo f assuming f=x^n+1	
+	let n = f.coeffs().len()-1;
+	let mut coeffs = x.coeffs().to_vec();
+	if coeffs.len() < n+1 {
+		return Polynomial::new(coeffs)
+	} else{
+		for i in n..coeffs.len() {
+			coeffs[i % n] = coeffs[i % n]+(-1 as i64).pow((i/n).try_into().unwrap())*coeffs[i];
+		}
+		coeffs.resize(n,0);
+		Polynomial::new(coeffs)
+	}
+}
+
+pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, q : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
     //Multiply two polynoms
     //Args:
     //	x, y: two polynoms to be multiplied.
     //	modulus: coefficient modulus.
     //	f: polynomial modulus.
     //Returns:
-    //	polynomial in Z_modulus[X]/(f).
+    //	polynomial in Z_q[X]/(f).
 	let mut r = x*y;
     r = polyrem(r,f);
     if modulus != 0 {
         mod_coeffs(r, modulus)
+    r.division(f);
+    if q != 0 {
+        mod_coeffs(r, q)
     }
     else{
         r
     }
 }
+
+fn ntt(data: &[i64], _root: i64, _modulus: i64) -> Vec<i64> {
+    // Placeholder for Number Theoretic Transform (NTT)
+    // This just clones the input for now.
+    data.to_vec()
+}
+
+fn intt(data: &[i64], _root: i64, _modulus: i64) -> Vec<i64> {
+    // Placeholder for Inverse Number Theoretic Transform (INTT)
+    // This just clones the input for now.
+    data.to_vec()
+}
+
+
+/// Multiplies two polynomials using the Number Theoretic Transform (NTT).
+///
+/// # Arguments
+/// * `a` - Reference to the first polynomial.
+/// * `b` - Reference to the second polynomial.
+/// * `root` - Primitive root of unity for the NTT.
+/// * `modulus` - Modulus under which arithmetic is performed.
+///
+/// # Returns
+/// * A new polynomial representing the product of `a` and `b`.
+pub fn ntt_polymul(a: &Polynomial<i64>, b: &Polynomial<i64>, root: i64, modulus: i64) -> Polynomial<i64> {
+    // Get the degrees of the polynomials
+    let degree_a = a.deg().unwrap_or(0);
+    let degree_b = b.deg().unwrap_or(0);
+
+    // Determine the size of the NTT (smallest power of 2 that can hold the result)
+    let n = (degree_a + degree_b + 1).next_power_of_two();
+
+    // Extract coefficients and pad them to the required length
+    let mut a_padded = a.coeffs().to_vec();
+    let mut b_padded = b.coeffs().to_vec();
+    a_padded.resize(n, 0);
+    b_padded.resize(n, 0);
+
+    // Perform the NTT on both polynomials
+    let a_ntt = ntt(&a_padded, root, modulus);
+    let b_ntt = ntt(&b_padded, root, modulus);
+
+    // Pointwise multiplication in the NTT domain
+    let c_ntt: Vec<i64> = a_ntt
+        .iter()
+        .zip(&b_ntt)
+        .map(|(&x, &y)| (x * y) % modulus)
+        .collect();
+
+    // Perform the inverse NTT
+    let c_coefficients = intt(&c_ntt, root, modulus);
+
+    // Return the result as a new polynomial
+    Polynomial::new(c_coefficients)
+}
+
 
 pub fn polyadd(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
     //Add two polynoms
