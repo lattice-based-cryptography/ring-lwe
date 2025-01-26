@@ -51,6 +51,21 @@ pub fn mod_coeffs(x : Polynomial<i64>, modulus : i64) -> Polynomial<i64> {
 	}
 }
 
+pub fn polyrem(x: Polynomial<i64>, f: &Polynomial<i64>) -> Polynomial<i64> {
+	//Returns remainder of x modulo f assuming f=x^n+1	
+	let n = f.coeffs().len()-1;
+	let mut coeffs = x.coeffs().to_vec();
+	if coeffs.len() < n+1 {
+		return Polynomial::new(coeffs)
+	} else{
+		for i in n..coeffs.len() {
+			coeffs[i % n] = coeffs[i % n]+(-1 as i64).pow((i/n).try_into().unwrap())*coeffs[i];
+		}
+		coeffs.resize(n,0);
+		Polynomial::new(coeffs)
+	}
+}
+
 pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
     //Multiply two polynoms
     //Args:
@@ -60,7 +75,7 @@ pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &P
     //Returns:
     //	polynomial in Z_modulus[X]/(f).
 	let mut r = x*y;
-    r.division(f);
+    r = polyrem(r,f);
     if modulus != 0 {
         mod_coeffs(r, modulus)
     }
@@ -78,7 +93,7 @@ pub fn polyadd(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &P
     //Returns:
     //	polynomial in Z_modulus[X]/(f).
 	let mut r = x+y;
-    r.division(f);
+    r = polyrem(r,f);
     if modulus != 0 {
         mod_coeffs(r, modulus)
     }
