@@ -101,7 +101,7 @@ mod tests {
         assert_eq!(plaintext_prod, decrypted_prod, "test failed: {} != {}", plaintext_prod, decrypted_prod);
     }
 
-    // Test homomorphic multiplication property: product of encrypted plaintexts should decrypt to plaintext product
+    // Test fast polynomial multiplcation using NTT for small example polynomials
     #[test]
     pub fn test_polymul_fast() {
         let p: i64 = 17; // Prime modulus
@@ -118,7 +118,7 @@ mod tests {
         assert_eq!(c_std, c_fast, "test failed: {} != {}", c_std, c_fast);
     }
 
-    // Test homomorphic multiplication property: product of encrypted plaintexts should decrypt to plaintext product
+    // Test fast polynomial multiplication with the NTT for uniformly random polynomials degree n
     #[test]
     pub fn test_polymul_fast_uniform() {
         let seed = None; //set the random seed
