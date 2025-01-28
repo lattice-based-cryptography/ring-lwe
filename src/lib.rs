@@ -1,5 +1,6 @@
 use polynomial_ring::Polynomial;
 use rand_distr::{Uniform, Normal, Distribution};
+use ntt::polymul_ntt;
 use rand::SeedableRng;
 use rand::rngs::StdRng;
 
@@ -66,23 +67,54 @@ pub fn polyrem(x: Polynomial<i64>, f: &Polynomial<i64>) -> Polynomial<i64> {
 	}
 }
 
-pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
+pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, q : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
     //Multiply two polynoms
     //Args:
     //	x, y: two polynoms to be multiplied.
     //	modulus: coefficient modulus.
     //	f: polynomial modulus.
     //Returns:
-    //	polynomial in Z_modulus[X]/(f).
+    //	polynomial in Z_q[X]/(f).
 	let mut r = x*y;
     r = polyrem(r,f);
-    if modulus != 0 {
-        mod_coeffs(r, modulus)
+    if q != 0 {
+        mod_coeffs(r, q)
     }
     else{
         r
     }
 }
+
+pub fn polymul_fast(
+    x: &Polynomial<i64>, 
+    y: &Polynomial<i64>, 
+    q: i64, 
+    f: &Polynomial<i64>, 
+    root: i64
+) -> Polynomial<i64> {
+    // Compute the degree and padded coefficients
+    let n = 2 * (x.deg().unwrap() + 1);
+    let x_pad = {
+        let mut coeffs = x.coeffs().to_vec();
+        coeffs.resize(n, 0);
+        coeffs
+    };
+    let y_pad = {
+        let mut coeffs = y.coeffs().to_vec();
+        coeffs.resize(n, 0);
+        coeffs
+    };
+
+    // Perform the polynomial multiplication
+    let r_coeffs = polymul_ntt(&x_pad, &y_pad, n, q, root);
+
+    // Construct the result polynomial and reduce modulo f
+    let mut r = Polynomial::new(r_coeffs);
+    r.division(f);
+    mod_coeffs(r, q)
+}
+
+
 
 pub fn polyadd(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
     //Add two polynoms

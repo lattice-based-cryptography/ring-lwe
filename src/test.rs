@@ -3,7 +3,7 @@ mod tests {
     use crate::keygen::{keygen, keygen_string};
     use crate::encrypt::{encrypt, encrypt_string};
     use crate::decrypt::{decrypt, decrypt_string};
-    use ring_lwe::{Parameters, polyadd, polymul, mod_coeffs,nearest_int};
+    use ring_lwe::{Parameters, polyadd, polymul, polymul_fast, mod_coeffs, nearest_int, gen_uniform_poly};
     use polynomial_ring::Polynomial;
 
     // Test for basic keygen/encrypt/decrypt of a message
@@ -99,5 +99,40 @@ mod tests {
         let decrypted_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| nearest_int(coeff,delta * delta) ).collect::<Vec<_>>()),t);
         
         assert_eq!(plaintext_prod, decrypted_prod, "test failed: {} != {}", plaintext_prod, decrypted_prod);
+    }
+
+    // Test homomorphic multiplication property: product of encrypted plaintexts should decrypt to plaintext product
+    #[test]
+    pub fn test_polymul_fast() {
+        let p: i64 = 17; // Prime modulus
+        let root: i64 = 3; // Primitive root of unity for the modulus
+        let params = Parameters::default();
+    
+        // Input polynomials (padded to length `n`)
+        let a = Polynomial::new(vec![1, 2, 3, 4]);
+        let b = Polynomial::new(vec![5, 6, 7, 8]);
+    
+        let c_std = polymul(&a, &b, p, &params.f);
+        let c_fast = polymul_fast(&a, &b, p, &params.f, root);
+
+        assert_eq!(c_std, c_fast, "test failed: {} != {}", c_std, c_fast);
+    }
+
+    // Test homomorphic multiplication property: product of encrypted plaintexts should decrypt to plaintext product
+    #[test]
+    pub fn test_polymul_fast_uniform() {
+        let seed = None; //set the random seed
+        let p: i64 = 12289; // Prime modulus
+        let root: i64 = 11; // Primitive root of unity for the modulus
+        let params = Parameters::default();
+    
+        // Input polynomials (padded to length `n`)
+        let a = gen_uniform_poly(params.n, p, seed);
+        let b = gen_uniform_poly(params.n, p, seed);
+    
+        let c_std = polymul(&a, &b, p, &params.f);
+        let c_fast = polymul_fast(&a, &b, p, &params.f, root);
+
+        assert_eq!(c_std, c_fast, "test failed: {} != {}", c_std, c_fast);
     }
 }
