@@ -103,20 +103,35 @@ pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, q : i64, f : &Polynom
     }
 }
 
-pub fn polymul_fast(x : &Polynomial<i64>, y : &Polynomial<i64>, q : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
-    //Multiply two polynomials using the NTT which is faster
-    //Args:
-    //	x, y: two polynoms to be multiplied.
-    //	modulus: coefficient modulus.
-    //	f: polynomial modulus.
-    //Returns:
-    //	polynomial in Z_q[X]/(f).
-    let n = x.deg().unwrap();
-    let root = 3;
-	let r_coeffs = polymul_ntt(x.coeffs(),y.coeffs(), n, q, root);
+pub fn polymul_fast(
+    x: &Polynomial<i64>, 
+    y: &Polynomial<i64>, 
+    q: i64, 
+    f: &Polynomial<i64>, 
+    root: i64
+) -> Polynomial<i64> {
+    // Compute the degree and padded coefficients
+    let n = 2 * (x.deg().unwrap() + 1);
+    let x_pad = {
+        let mut coeffs = x.coeffs().to_vec();
+        coeffs.resize(n, 0);
+        coeffs
+    };
+    let y_pad = {
+        let mut coeffs = y.coeffs().to_vec();
+        coeffs.resize(n, 0);
+        coeffs
+    };
+
+    // Perform the polynomial multiplication
+    let r_coeffs = polymul_ntt(&x_pad, &y_pad, n, q, root);
+
+    // Construct the result polynomial and reduce modulo f
     let mut r = Polynomial::new(r_coeffs);
-    r.division(f)
+    r.division(f);
+    mod_coeffs(r, q)
 }
+
 
 
 pub fn polyadd(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &Polynomial<i64>) -> Polynomial<i64> {

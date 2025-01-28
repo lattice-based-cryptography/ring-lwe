@@ -3,7 +3,8 @@ mod tests {
     use crate::keygen::{keygen, keygen_string};
     use crate::encrypt::{encrypt, encrypt_string};
     use crate::decrypt::{decrypt, decrypt_string};
-    use ring_lwe::{Parameters, polyadd, polymul, mod_coeffs,nearest_int};
+    use ring_lwe::{Parameters, polyadd, polymul, polymul_fast, mod_coeffs, nearest_int};
+    use ntt::{mod_exp};
     use polynomial_ring::Polynomial;
 
     // Test for basic keygen/encrypt/decrypt of a message
@@ -99,5 +100,29 @@ mod tests {
         let decrypted_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| nearest_int(coeff,delta * delta) ).collect::<Vec<_>>()),t);
         
         assert_eq!(plaintext_prod, decrypted_prod, "test failed: {} != {}", plaintext_prod, decrypted_prod);
+    }
+
+    // Test homomorphic multiplication property: product of encrypted plaintexts should decrypt to plaintext product
+    #[test]
+    pub fn test_polymul_fast() {
+        let p: i64 = 17; // Prime modulus
+        let root: i64 = 3; // Primitive root of unity for the modulus
+        let n: usize = 8;  // Length of the NTT
+        let params = Parameters::default();
+    
+        // Compute n-th root of unity: ω = g^((p - 1) / n) % p
+        let omega = mod_exp(root, (p - 1) / n as i64, p);
+    
+        // Input polynomials (padded to length `n`)
+        let a = Polynomial::new(vec![1, 2, 3, 4]);
+        println!("a: {:?}", a);
+        let b = Polynomial::new(vec![5, 6, 7, 8]);
+        println!("b: {:?}", b);
+    
+        let c_std = polymul(&a, &b, p, &params.f);
+        println!("c_std: {:?}", c_std);
+        let c_fast = polymul_fast(&a, &b, p, &params.f, root);
+
+        assert_eq!(c_std, c_fast, "test failed: {} != {}", c_std, c_fast);
     }
 }
