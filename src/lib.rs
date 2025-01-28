@@ -110,7 +110,7 @@ pub fn polymul_fast(
 
     // Construct the result polynomial and reduce modulo f
     let mut r = Polynomial::new(r_coeffs);
-    r.division(f);
+    r = polyrem(r,f);
     mod_coeffs(r, q)
 }
 
