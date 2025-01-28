@@ -9,8 +9,6 @@ Implmentation of lattice-based encryption method ring-LWE in pure Rust.
 
 **Disclaimer**: This is not secure. It is not written in constant-time nor resistant to other side-channel attacks. This is intended for educational use and not for real-world applications.
 
-**See**: [open-encrypt](https://github.com/jacksonwalters/open-encrypt)
-
 **Usage**: In the `src` directory,
 
 `cargo build`
