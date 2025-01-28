@@ -114,7 +114,7 @@ pub fn polymul_fast(x : &Polynomial<i64>, y : &Polynomial<i64>, q : i64, f : &Po
     let n = x.deg().unwrap();
     let root = 3;
 	let r_coeffs = polymul_ntt(x.coeffs(),y.coeffs(), n, q, root);
-    let r = Polynomial::new(r_coeffs)
+    let mut r = Polynomial::new(r_coeffs);
     r.division(f)
 }
 
