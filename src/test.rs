@@ -122,8 +122,8 @@ mod tests {
     #[test]
     pub fn test_polymul_fast_uniform() {
         let seed = None; //set the random seed
-        let p: i64 = 10753; // Prime modulus
-        let root: i64 = 5; // Primitive root of unity for the modulus
+        let p: i64 = 7681; // Prime modulus
+        let root: i64 = 7; // Primitive root of unity for the modulus
         let params = Parameters::default();
     
         // Input polynomials (padded to length `n`)
