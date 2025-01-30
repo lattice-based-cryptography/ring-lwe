@@ -5,7 +5,7 @@
 
 Implmentation of lattice-based encryption method ring-LWE in pure Rust.
 
-**Description**: This provides the basic PKE (keygen, encryption, and decryption) operations for the ring learning-with-errors and module learning-with-errors scheme.
+**Description**: This provides the basic PKE (keygen, encryption, and decryption) operations for the ring learning-with-errors scheme.
 
 **Disclaimer**: This is not secure. It is not written in constant-time nor resistant to other side-channel attacks. This is intended for educational use and not for real-world applications.
 
