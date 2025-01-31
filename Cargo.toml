@@ -1,7 +1,12 @@
 [package]
 name = "ring-lwe"
 version = "0.1.0"
-edition = "2021"
+edition = "2025"
+description = "Implements the ring learning-with-errors public key encrpytion scheme."
+license = "MIT"
+documentation = "https://docs.rs/ring-lwe"
+homepage = "https://github.com/lattice-based-cryptography/ring-lwe"
+repository = "https://github.com/lattice-based-cryptography/ring-lwe"
 
 [dependencies]
 polynomial-ring = "0.5.0"
