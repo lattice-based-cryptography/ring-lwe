@@ -1,7 +1,7 @@
 [package]
 name = "ring-lwe"
 version = "0.1.0"
-edition = "2025"
+edition = "2021"
 description = "Implements the ring learning-with-errors public key encrpytion scheme."
 license = "MIT"
 documentation = "https://docs.rs/ring-lwe"
