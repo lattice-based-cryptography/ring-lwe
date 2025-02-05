@@ -90,7 +90,7 @@ pub fn polymul_fast(
     y: &Polynomial<i64>, 
     q: i64, 
     f: &Polynomial<i64>, 
-    root: i64
+    omega: i64
 ) -> Polynomial<i64> {
     // Compute the degree and padded coefficients
     let n = 2 * (x.deg().unwrap() + 1);
@@ -106,7 +106,7 @@ pub fn polymul_fast(
     };
 
     // Perform the polynomial multiplication
-    let r_coeffs = polymul_ntt(&x_pad, &y_pad, n, q, root);
+    let r_coeffs = polymul_ntt(&x_pad, &y_pad, n, q, omega);
 
     // Construct the result polynomial and reduce modulo f
     let mut r = Polynomial::new(r_coeffs);
