@@ -107,8 +107,9 @@ mod tests {
     pub fn test_polymul_fast() {
         let p: i64 = 17; // Prime modulus
         let root: i64 = 3; // Primitive root of unity for the modulus
+        let n: usize = 8;  // Length of the NTT (must be a power of 2)
+        let omega = omega(root, p, n); // n-th root of unity
         let params = Parameters::default();
-        let omega = omega(root, p, params.n); // n-th root of unity
     
         // Input polynomials (padded to length `n`)
         let a = Polynomial::new(vec![1, 2, 3, 4]);
@@ -127,7 +128,7 @@ mod tests {
         let p: i64 = 12289; // Prime modulus
         let root: i64 = 11; // Primitive root of unity for the modulus
         let params = Parameters::default();
-        let omega = omega(root, p, params.n); // n-th root of unity
+        let omega = omega(root, p, 2*params.n); // n-th root of unity
     
         // Input polynomials (padded to length `n`)
         let a = gen_uniform_poly(params.n, p, seed);
