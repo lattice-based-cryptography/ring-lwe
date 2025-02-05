@@ -125,17 +125,14 @@ mod tests {
     #[test]
     pub fn test_polymul_fast_uniform() {
         let seed = None; //set the random seed
-        let p: i64 = 12289; // Prime modulus
-        let root: i64 = 11; // Primitive root of unity for the modulus
         let params = Parameters::default();
-        let omega = omega(root, p, 2*params.n); // n-th root of unity
     
         // Input polynomials (padded to length `n`)
-        let a = gen_uniform_poly(params.n, p, seed);
-        let b = gen_uniform_poly(params.n, p, seed);
+        let a = gen_uniform_poly(params.n, params.p, seed);
+        let b = gen_uniform_poly(params.n, params.p, seed);
     
-        let c_std = polymul(&a, &b, p, &params.f);
-        let c_fast = polymul_fast(&a, &b, p, &params.f, omega);
+        let c_std = polymul(&a, &b, params.p, &params.f);
+        let c_fast = polymul_fast(&a, &b, params.p, &params.f, params.omega);
 
         assert_eq!(c_std, c_fast, "test failed: {} != {}", c_std, c_fast);
     }

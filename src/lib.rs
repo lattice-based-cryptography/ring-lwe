@@ -1,14 +1,17 @@
 use polynomial_ring::Polynomial;
 use rand_distr::{Uniform, Normal, Distribution};
-use ntt::polymul_ntt;
+use ntt::{omega,polymul_ntt};
 use rand::SeedableRng;
 use rand::rngs::StdRng;
 
 #[derive(Debug)]
 pub struct Parameters {
     pub n: usize,       // Polynomial modulus degree
-    pub q: i64,       // Ciphertext modulus
+    pub q: i64,       // Ciphertext composite modulus
+    pub p: i64,      // Ciphertext prime modulus
     pub t: i64,       // Plaintext modulus
+    pub root: i64,    // Primitive root of unity
+    pub omega: i64,   // n-th root of unity
     pub f: Polynomial<i64>, // Polynomial modulus (x^n + 1 representation)
     pub sigma: f64,    // Standard deviation for normal distribution
 }
@@ -17,13 +20,16 @@ impl Default for Parameters {
     fn default() -> Self {
         let n = 512;
         let q = 1048576;
+        let p = 12289;
         let t = 256;
+        let root = 11;
+        let omega = omega(root, p, 2*n);
         let mut poly_vec = vec![0i64;n+1];
         poly_vec[0] = 1;
         poly_vec[n] = 1;
         let f = Polynomial::new(poly_vec);
         let sigma = 8.0;
-        Parameters { n, q, t, f, sigma}
+        Parameters {n, q, p, t, root, omega, f, sigma}
     }
 }
 
