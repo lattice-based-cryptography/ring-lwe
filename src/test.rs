@@ -4,6 +4,7 @@ mod tests {
     use crate::encrypt::{encrypt, encrypt_string};
     use crate::decrypt::{decrypt, decrypt_string};
     use ring_lwe::{Parameters, polyadd, polymul, polymul_fast, mod_coeffs, nearest_int, gen_uniform_poly};
+    use ntt::omega;
     use polynomial_ring::Polynomial;
 
     // Test for basic keygen/encrypt/decrypt of a message
@@ -106,6 +107,8 @@ mod tests {
     pub fn test_polymul_fast() {
         let p: i64 = 17; // Prime modulus
         let root: i64 = 3; // Primitive root of unity for the modulus
+        let n: usize = 8;  // Length of the NTT (must be a power of 2)
+        let omega = omega(root, p, n); // n-th root of unity
         let params = Parameters::default();
     
         // Input polynomials (padded to length `n`)
@@ -113,7 +116,7 @@ mod tests {
         let b = Polynomial::new(vec![5, 6, 7, 8]);
     
         let c_std = polymul(&a, &b, p, &params.f);
-        let c_fast = polymul_fast(&a, &b, p, &params.f, root);
+        let c_fast = polymul_fast(&a, &b, p, &params.f, omega);
 
         assert_eq!(c_std, c_fast, "test failed: {} != {}", c_std, c_fast);
     }
@@ -122,16 +125,14 @@ mod tests {
     #[test]
     pub fn test_polymul_fast_uniform() {
         let seed = None; //set the random seed
-        let p: i64 = 12289; // Prime modulus
-        let root: i64 = 11; // Primitive root of unity for the modulus
         let params = Parameters::default();
     
         // Input polynomials (padded to length `n`)
-        let a = gen_uniform_poly(params.n, p, seed);
-        let b = gen_uniform_poly(params.n, p, seed);
+        let a = gen_uniform_poly(params.n, params.p, seed);
+        let b = gen_uniform_poly(params.n, params.p, seed);
     
-        let c_std = polymul(&a, &b, p, &params.f);
-        let c_fast = polymul_fast(&a, &b, p, &params.f, root);
+        let c_std = polymul(&a, &b, params.p, &params.f);
+        let c_fast = polymul_fast(&a, &b, params.p, &params.f, params.omega);
 
         assert_eq!(c_std, c_fast, "test failed: {} != {}", c_std, c_fast);
     }
