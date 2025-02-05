@@ -20,13 +20,13 @@ fn benchmark_polymul_small() {
     let start_std = Instant::now();
     let c_std = polymul(&a, &b, p, &params.f);
     let duration_std = start_std.elapsed();
-    println!("Standard multiplication took: {:?}", duration_std);
+    println!("Standard multiplication (small) took: {:?}", duration_std);
 
     // Time fast multiplication
     let start_fast = Instant::now();
     let c_fast = polymul_fast(&a, &b, p, &params.f, root);
     let duration_fast = start_fast.elapsed();
-    println!("Fast multiplication took: {:?}", duration_fast);
+    println!("Fast multiplication (small) took: {:?}", duration_fast);
 
     // Verify correctness
     assert_eq!(c_std, c_fast, "Benchmark failed: {} != {}", c_std, c_fast);
@@ -46,13 +46,13 @@ fn benchmark_polymul_uniform() {
     let start_std = Instant::now();
     let c_std = polymul(&a, &b, p, &params.f);
     let duration_std = start_std.elapsed();
-    println!("Standard multiplication took: {:?}", duration_std);
+    println!("Standard multiplication (large) took: {:?}", duration_std);
 
     // Time fast multiplication
     let start_fast = Instant::now();
     let c_fast = polymul_fast(&a, &b, p, &params.f, root);
     let duration_fast = start_fast.elapsed();
-    println!("Fast multiplication took: {:?}", duration_fast);
+    println!("Fast multiplication (large) took: {:?}", duration_fast);
 
     // Verify correctness
     assert_eq!(c_std, c_fast, "Benchmark failed: {} != {}", c_std, c_fast);
