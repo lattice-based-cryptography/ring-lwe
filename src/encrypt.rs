@@ -34,22 +34,16 @@ pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters,
     let pk_b = Polynomial::new(pk_arr[..params.n].to_vec());
     let pk_a = Polynomial::new(pk_arr[params.n..].to_vec());
     let pk = [pk_b, pk_a];
-
-    // Define the integers to be encrypted
     
-    let message_bytes: Vec<String> = message
+    // Convert each byte into its 8-bit representation (MSB first)
+    let message_bits: Vec<i64> = message
         .bytes()
-        .map(|byte| format!("{:b}", byte))
+        .flat_map(|byte| (0..8).rev().map(move |i| ((byte >> i) & 1) as i64))
         .collect();
 
-    let message_ints: Vec<i64> = message_bytes
-        .iter()
-        .filter_map(|byte| i64::from_str_radix(byte, 2).ok())
-        .collect();
-
-    // Convert message integers into a vector of Polynomials
-    let message_blocks: Vec<Polynomial<i64>> = message_ints
-        .chunks(params.n)
+    // Convert bits into a vector of Polynomials
+    let message_blocks: Vec<Polynomial<i64>> = message_bits
+        .chunks(params.n)  // Pack bits into polynomials of size `n`
         .map(|chunk| Polynomial::new(chunk.to_vec()))
         .collect();
 
