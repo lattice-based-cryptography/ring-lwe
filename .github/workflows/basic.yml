@@ -20,5 +20,3 @@ jobs:
       run: |
         cargo build --verbose
         cargo test --verbose
-
-      continue-on-error: true
