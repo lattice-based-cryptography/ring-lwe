@@ -1,17 +1,17 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{Parameters, polymul, polyadd, polyinv, gen_ternary_poly, gen_uniform_poly};
+use ring_lwe::{Parameters, polymul_fast, polyadd, polyinv, gen_ternary_poly, gen_uniform_poly};
 use std::collections::HashMap;
 
 pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], Polynomial<i64>) {
 
     //rename parameters
-    let (n, q, f) = (params.n, params.q, &params.f);
+    let (n, q, f, omega) = (params.n, params.q, &params.f, params.omega);
 
     // Generate a public and secret key
     let sk = gen_ternary_poly(n, seed);
     let a = gen_uniform_poly(n, q, seed);
     let e = gen_ternary_poly(n, seed);
-    let b = polyadd(&polymul(&polyinv(&a,q*q), &sk, q*q, &f), &polyinv(&e,q*q), q*q, &f);
+    let b = polyadd(&polymul_fast(&polyinv(&a,q), &sk, q, &f, omega), &polyinv(&e,q), q, &f);
     
     // Return public key (b, a) as an array and secret key (sk)
     ([b, a], sk)
