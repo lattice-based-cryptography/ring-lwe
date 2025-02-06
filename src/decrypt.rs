@@ -1,13 +1,13 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{Parameters, polymul, polyadd, nearest_int};
+use ring_lwe::{Parameters, polymul_fast, polyadd, nearest_int};
 
 pub fn decrypt(
     sk: &Polynomial<i64>,    // Secret key
     ct: &[Polynomial<i64>; 2],        // Array of ciphertext polynomials
     params: &Parameters
 ) -> Polynomial<i64> {
-    let (_n,q,t,f) = (params.n, params.q, params.t, &params.f);
-	let scaled_pt = polyadd(&polymul(&ct[1], sk, q, f),&ct[0], q, f);
+    let (_n,q,t,f,omega) = (params.n, params.q, params.t, &params.f, params.omega);
+	let scaled_pt = polyadd(&polymul_fast(&ct[1], sk, q, f, omega),&ct[0], q, f);
 	let mut decrypted_coeffs = vec![];
 	let mut s;
 	for c in scaled_pt.coeffs().iter() {
