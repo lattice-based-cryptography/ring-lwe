@@ -113,11 +113,11 @@ mod tests {
         let params = Parameters::default();
     
         // Input polynomials (padded to length `n`)
-        let a = gen_uniform_poly(params.n, params.p, seed);
-        let b = gen_uniform_poly(params.n, params.p, seed);
+        let a = gen_uniform_poly(params.n, params.q, seed);
+        let b = gen_uniform_poly(params.n, params.q, seed);
     
-        let c_std = polymul(&a, &b, params.p, &params.f);
-        let c_fast = polymul_fast(&a, &b, params.p, &params.f, params.omega);
+        let c_std = polymul(&a, &b, params.q, &params.f);
+        let c_fast = polymul_fast(&a, &b, params.q, &params.f, params.omega);
 
         assert_eq!(c_std, c_fast, "test failed: {} != {}", c_std, c_fast);
     }
