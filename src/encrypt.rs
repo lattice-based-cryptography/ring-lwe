@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{Parameters, mod_coeffs, polymul, polyadd, gen_ternary_poly};
+use ring_lwe::{Parameters, mod_coeffs, polymul_fast, polyadd, gen_ternary_poly};
 
 pub fn encrypt(
     pk: &[Polynomial<i64>; 2],    // Public key (b, a)
@@ -7,7 +7,7 @@ pub fn encrypt(
     params: &Parameters,       //parameters (n,q,t,f)
     seed: Option<u64>            // Seed for random number generator
 ) -> (Polynomial<i64>, Polynomial<i64>) {
-    let (n,q,t,f) = (params.n, params.q, params.t, &params.f);
+    let (n,q,t,f,omega) = (params.n, params.q, params.t, &params.f, params.omega);
     // Scale the plaintext polynomial. use floor(m*q/t) rather than floor (q/t)*m
     let scaled_m = mod_coeffs(m * q / t, q);
 
@@ -17,8 +17,8 @@ pub fn encrypt(
     let u = gen_ternary_poly(n, seed);
 
     // Compute ciphertext components
-    let ct0 = polyadd(&polyadd(&polymul(&pk[0], &u, q*q, f), &e1, q*q, f),&scaled_m,q*q,f);
-    let ct1 = polyadd(&polymul(&pk[1], &u, q*q, f), &e2, q*q, f);
+    let ct0 = polyadd(&polyadd(&polymul_fast(&pk[0], &u, q, f, omega), &e1, q, f),&scaled_m,q,f);
+    let ct1 = polyadd(&polymul_fast(&pk[1], &u, q, f, omega), &e2, q, f);
 
     (ct0, ct1)
 }

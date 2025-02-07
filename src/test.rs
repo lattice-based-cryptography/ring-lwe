@@ -54,8 +54,10 @@ mod tests {
     pub fn test_hom_prod() {
 
         let seed = None; //set the random seed
-        let params = Parameters::default();
+        let mut params = Parameters::default();
         let (q, t, f) = (params.q, params.t, &params.f);
+        params.q = q*q;
+        params.omega = omega(params.root, q*q, 2*params.n);
 
         //create polynomials from ints
         let m0_poly = Polynomial::new(vec![1, 0, 1]);
