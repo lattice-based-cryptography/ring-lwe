@@ -237,5 +237,9 @@ pub fn gen_normal_poly(size: usize, sigma: f64, seed: Option<u64>) -> Polynomial
 
 //returns the nearest integer to a/b
 pub fn nearest_int(a: i64, b: i64) -> i64 {
-    (a + b / 2) / b
+    if a > 0 {
+		(a + b / 2) / b
+	}else {
+		-((-a + b / 2) / b)
+	}
 }
