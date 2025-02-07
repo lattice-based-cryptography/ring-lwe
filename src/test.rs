@@ -27,20 +27,13 @@ mod tests {
 
         let seed = None; //set the random seed
         let params = Parameters::default();  // Adjust this if needed
+		let (t, f) = (params.t, &params.f);
 
         // Create polynomials from ints
-        let m0_poly = Polynomial::new({
-            let mut v = vec![0i64; params.n];
-            v[0] = 2;
-            v
-        });
-        let m1_poly = Polynomial::new({
-            let mut v = vec![0i64; params.n];
-            v[0] = 3;
-            v
-        });
+        let m0_poly = Polynomial::new(vec![1, 0, 1]);
+        let m1_poly = Polynomial::new(vec![0, 0, 1]);
 
-        let plaintext_sum = &m0_poly + &m1_poly;
+        let plaintext_sum = polyadd(&m0_poly, &m1_poly, t, &f);
         let (pk, sk) = keygen(&params,seed);
 
         // Encrypt plaintext messages
@@ -62,19 +55,11 @@ mod tests {
 
         let seed = None; //set the random seed
         let params = Parameters::default();
-        let (n, q, t, f) = (params.n, params.q, params.t, &params.f);
+        let (q, t, f) = (params.q, params.t, &params.f);
 
         //create polynomials from ints
-        let m0_poly = Polynomial::new({
-            let mut v = vec![0i64; n];
-            v[0] = 2;
-            v
-        });
-        let m1_poly = Polynomial::new({
-            let mut v = vec![0i64; n];
-            v[0] = 3;
-            v
-        });
+        let m0_poly = Polynomial::new(vec![1, 0, 1]);
+        let m1_poly = Polynomial::new(vec![0, 0, 1]);
 
         // Generate the keypair
         let (pk, sk) = keygen(&params,seed);
@@ -83,7 +68,7 @@ mod tests {
         let u = encrypt(&pk, &m0_poly, &params, seed);
         let v = encrypt(&pk, &m1_poly, &params, seed);
 
-        let plaintext_prod = &m0_poly * &m1_poly;
+        let plaintext_prod = polymul(&m0_poly, &m1_poly, t, &f);
         //compute product of encrypted data, using non-standard multiplication
         let c0 = polymul(&u.0,&v.0,q*q,&f);
         let u0v1 = &polymul(&u.0,&v.1,q*q,&f);

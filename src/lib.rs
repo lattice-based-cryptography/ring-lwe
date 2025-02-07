@@ -21,7 +21,7 @@ impl Default for Parameters {
         let n = 512;
         let q = 12289;
         let p = 12289;
-        let t = 16;
+        let t = 2;
         let root = 11;
         let omega = omega(root, p, 2*n);
         let mut poly_vec = vec![0i64;n+1];
