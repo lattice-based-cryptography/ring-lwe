@@ -7,8 +7,7 @@ use rand::rngs::StdRng;
 #[derive(Debug)]
 pub struct Parameters {
     pub n: usize,       // Polynomial modulus degree
-    pub q: i64,       // Ciphertext composite modulus
-    pub p: i64,      // Ciphertext prime modulus
+    pub q: i64,       // Ciphertext modulus
     pub t: i64,       // Plaintext modulus
     pub root: i64,    // Primitive root of unity
     pub omega: i64,   // n-th root of unity
@@ -20,16 +19,15 @@ impl Default for Parameters {
     fn default() -> Self {
         let n = 512;
         let q = 12289;
-        let p = 12289;
-        let t = 16;
+        let t = 2;
         let root = 11;
-        let omega = omega(root, p, 2*n);
+        let omega = omega(root, q, 2*n);
         let mut poly_vec = vec![0i64;n+1];
         poly_vec[0] = 1;
         poly_vec[n] = 1;
         let f = Polynomial::new(poly_vec);
         let sigma = 8.0;
-        Parameters {n, q, p, t, root, omega, f, sigma}
+        Parameters {n, q, t, root, omega, f, sigma}
     }
 }
 
