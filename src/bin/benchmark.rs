@@ -37,24 +37,22 @@ fn benchmark_polymul_small() {
 
 fn benchmark_polymul_uniform() {
     let seed = None; // Set the random seed
-    let p: i64 = 12289; // Prime modulus
-    let root: i64 = 11; // Primitive root of unity for the modulus
     let params = Parameters::default();
-    let omega = omega(root, p, 2*params.n); // n-th root of unity
+    let (n, q, omega) = (params.n, params.q, params.omega);
 
     // Input polynomials (padded to length `n`)
-    let a = gen_uniform_poly(params.n, p, seed);
-    let b = gen_uniform_poly(params.n, p, seed);
+    let a = gen_uniform_poly(n, q, seed);
+    let b = gen_uniform_poly(n, q, seed);
 
     // Time standard multiplication
     let start_std = Instant::now();
-    let c_std = polymul(&a, &b, p, &params.f);
+    let c_std = polymul(&a, &b, q, &params.f);
     let duration_std = start_std.elapsed();
     println!("Standard multiplication (large) took: {:?}", duration_std);
 
     // Time fast multiplication
     let start_fast = Instant::now();
-    let c_fast = polymul_fast(&a, &b, p, &params.f, omega);
+    let c_fast = polymul_fast(&a, &b, q, &params.f, omega);
     let duration_fast = start_fast.elapsed();
     println!("Fast multiplication (large) took: {:?}", duration_fast);
 
