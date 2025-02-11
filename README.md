@@ -2,6 +2,7 @@
 
 ![example workflow](https://github.com/jacksonwalters/lattice-based-rust/actions/workflows/basic.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+[![Crates.io](https://img.shields.io/crates/v/ring-lwe.svg)](https://crates.io/crates/ring-lwe)
 
 Implmentation of lattice-based encryption method ring-LWE in pure Rust.
 
