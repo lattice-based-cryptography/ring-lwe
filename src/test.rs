@@ -12,7 +12,7 @@ mod tests {
     pub fn test_basic() {
         let seed = None; //set the random seed
         let message = String::from("hello");
-        let params = Parameters::default();  // Adjust this if needed
+        let params = Parameters::default();
         let keypair = keygen_string(&params,seed);
         let pk_string = keypair.get("public").unwrap();
         let sk_string = keypair.get("secret").unwrap();

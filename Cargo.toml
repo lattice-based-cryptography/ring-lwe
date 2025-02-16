@@ -7,10 +7,11 @@ license = "MIT"
 documentation = "https://docs.rs/ring-lwe"
 homepage = "https://github.com/lattice-based-cryptography/ring-lwe"
 repository = "https://github.com/lattice-based-cryptography/ring-lwe"
+default-run = "ring-lwe"
 
 [dependencies]
 polynomial-ring = "0.5.0"
 num-traits = "=0.2.19"
 rand = "0.8.5"
 rand_distr = "0.4.3"
-ntt = "0.1.4"
+ntt = "=0.1.4"
