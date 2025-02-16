@@ -66,4 +66,12 @@ fn main() {
         println!("{}", decrypted_message);
     }
 
+    let mut params = Parameters::default();
+    let (q, t, f) = (params.q, params.t, &params.f);
+    params.q = q*q;
+    println!("q: {}", params.q);
+    params.omega = ntt::omega(q*q, 2*params.n);
+
+    //println!("omega^n: {}", ntt::mod_exp(params.omega, params.n as i64, params.q));
+
 }

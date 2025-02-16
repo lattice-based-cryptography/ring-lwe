@@ -9,7 +9,6 @@ pub struct Parameters {
     pub n: usize,       // Polynomial modulus degree
     pub q: i64,       // Ciphertext modulus
     pub t: i64,       // Plaintext modulus
-    pub root: i64,    // Primitive root of unity
     pub omega: i64,   // n-th root of unity
     pub f: Polynomial<i64>, // Polynomial modulus (x^n + 1 representation)
     pub sigma: f64,    // Standard deviation for normal distribution
@@ -20,14 +19,13 @@ impl Default for Parameters {
         let n = 512;
         let q = 12289;
         let t = 2;
-        let root = 11;
-        let omega = omega(root, q, 2*n);
+        let omega = omega(q, 2*n);
         let mut poly_vec = vec![0i64;n+1];
         poly_vec[0] = 1;
         poly_vec[n] = 1;
         let f = Polynomial::new(poly_vec);
         let sigma = 8.0;
-        Parameters {n, q, t, root, omega, f, sigma}
+        Parameters {n, q, t, omega, f, sigma}
     }
 }
 
