@@ -57,7 +57,7 @@ mod tests {
         let mut params = Parameters::default();
         let (q, t, f) = (params.q, params.t, &params.f);
         params.q = q*q;
-        params.omega = omega(q*q, 2*params.n);
+        params.omega = omega(params.q, 2*params.n);
 
         //create polynomials from ints
         let m0_poly = Polynomial::new(vec![1, 0, 1]);
