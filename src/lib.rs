@@ -105,6 +105,20 @@ pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, q : i64, f : &Polynom
 /// * `omega` - n-th root of unity
 /// # Returns:
 ///	polynomial in Z_q[X]/(f)
+/// # Example:
+/// ```
+/// use polynomial_ring::Polynomial;
+/// use ring_lwe::{polymul,polymul_fast,Parameters};
+/// let p: i64 = 17; // Prime modulus
+/// let n: usize = 8;  // Length of the NTT (must be a power of 2)
+/// let omega = ntt::omega(p, n); // n-th root of unity
+/// let params = Parameters::default();
+/// let a = Polynomial::new(vec![1, 2, 3, 4]);
+/// let b = Polynomial::new(vec![5, 6, 7, 8]);
+/// let c_std = polymul(&a, &b, p, &params.f);
+/// let c_fast = polymul_fast(&a, &b, p, &params.f, omega);
+/// assert_eq!(c_std, c_fast, "test failed: {} != {}", c_std, c_fast);
+/// ```
 pub fn polymul_fast(
     x: &Polynomial<i64>, 
     y: &Polynomial<i64>, 

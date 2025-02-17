@@ -8,6 +8,12 @@ use std::collections::HashMap;
 /// * `seed` - random seed
 /// # Returns:
 ///	(public key, secret key)
+/// # Example:
+/// ```
+/// use ring_lwe::{Parameters, keygen};
+/// let params = Parameters::default();
+/// let (pk, sk) = keygen(&params, None);
+/// ```
 pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], Polynomial<i64>) {
 
     //rename parameters
@@ -29,6 +35,14 @@ pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], 
 /// * `seed` - random seed
 /// # Returns:
 ///	HashMap containing public and secret keys
+/// # Example:
+/// ```
+/// use ring_lwe::{Parameters, keygen_string};
+/// let params = Parameters::default();
+/// let keys = keygen_string(&params, None);
+/// let pk_string = keys.get("public").unwrap();
+/// let sk_string = keys.get("secret").unwrap();
+/// ```
 pub fn keygen_string(params: &Parameters, seed: Option<u64>) -> HashMap<String,String> {
 
     // generate keys using parameters
