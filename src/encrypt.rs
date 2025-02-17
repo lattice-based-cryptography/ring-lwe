@@ -1,6 +1,22 @@
 use polynomial_ring::Polynomial;
 use ring_lwe::{Parameters, mod_coeffs, polymul_fast, polyadd, gen_ternary_poly};
 
+/// Encrypt a polynomial using the public key
+/// # Arguments:
+/// * `pk` - public key as an array of two Polynomials
+/// * `m` - plaintext polynomial
+/// * `params` - ring-LWE parameters
+/// * `seed` - random seed
+/// # Returns:
+///	(ciphertext component 0, ciphertext component 1)
+/// # Example:
+/// ```
+/// use ring_lwe::{Parameters, keygen, encrypt};
+/// let params = Parameters::default();
+/// let (pk, sk) = keygen(&params, None);
+/// let m = Polynomial::new(vec![1, 0, 1]);
+/// let ct = encrypt(&pk, &m, &params, None);
+/// ```
 pub fn encrypt(
     pk: &[Polynomial<i64>; 2],    // Public key (b, a)
     m: &Polynomial<i64>,        // Plaintext polynomial
@@ -31,6 +47,15 @@ pub fn encrypt(
 /// * `seed` - random seed
 /// # Returns:
 ///	encrypted message as a comma-separated string
+/// # Example:
+/// ```
+/// use ring_lwe::{Parameters, keygen_string, encrypt_string};
+/// let params = Parameters::default();
+/// let keys = keygen_string(&params, None);
+/// let pk_string = keys.get("public").unwrap();
+/// let message = String::from("hello");
+/// let ciphertext_string = encrypt_string(pk_string, &message, &params, None);
+/// ```
 pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters, seed: Option<u64>) -> String {
 
     // Get the public key from the string and format as two Polynomials

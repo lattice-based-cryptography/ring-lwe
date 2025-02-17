@@ -8,6 +8,15 @@ use ring_lwe::{Parameters, polymul_fast, polyadd, nearest_int};
 /// * `params` - ring-LWE parameters
 /// # Returns:
 ///	decrypted polynomial
+/// # Example:
+/// ```
+/// use ring_lwe::{Parameters, keygen, encrypt, decrypt};
+/// let params = Parameters::default();
+/// let (pk, sk) = keygen(&params, None);
+/// let m = Polynomial::new(vec![1, 0, 1]);
+/// let ct = encrypt(&pk, &m, &params, None);
+/// let decrypted_m = decrypt(&sk, &ct, &params);
+/// ```
 pub fn decrypt(
     sk: &Polynomial<i64>,    // Secret key
     ct: &[Polynomial<i64>; 2],        // Array of ciphertext polynomials
@@ -31,6 +40,17 @@ pub fn decrypt(
 /// * `params` - ring-LWE parameters
 /// # Returns:
 ///	decrypted message
+/// # Example:
+/// ```
+/// use ring_lwe::{Parameters, keygen_string, encrypt_string, decrypt_string};
+/// let params = Parameters::default();
+/// let keys = keygen_string(&params, None);
+/// let sk_string = keys.get("secret").unwrap();
+/// let pk_string = keys.get("public").unwrap();
+/// let message = String::from("hello");
+/// let ciphertext_string = encrypt_string(pk_string, &message, &params, None);
+/// let decrypted_message = decrypt_string(sk_string, &ciphertext_string, &params);
+/// ```
 pub fn decrypt_string(sk_string: &String, ciphertext_string: &String, params: &Parameters) -> String {
     // Get the secret key and format as polynomial
     let sk_coeffs: Vec<i64> = sk_string
