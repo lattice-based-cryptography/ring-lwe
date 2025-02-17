@@ -1,6 +1,13 @@
 use polynomial_ring::Polynomial;
 use ring_lwe::{Parameters, polymul_fast, polyadd, nearest_int};
 
+/// Decrypt a ciphertext using the secret key
+/// # Arguments:
+/// * `sk` - secret key
+/// * `ct` - array of ciphertext polynomials
+/// * `params` - ring-LWE parameters
+/// # Returns:
+///	decrypted polynomial
 pub fn decrypt(
     sk: &Polynomial<i64>,    // Secret key
     ct: &[Polynomial<i64>; 2],        // Array of ciphertext polynomials
@@ -17,6 +24,13 @@ pub fn decrypt(
     Polynomial::new(decrypted_coeffs)
 }
 
+/// Decrypt a ciphertext string using the secret key
+/// # Arguments:
+/// * `sk_string` - secret key as a comma-separated string
+/// * `ciphertext_string` - ciphertext to decrypt as a comma-separated string
+/// * `params` - ring-LWE parameters
+/// # Returns:
+///	decrypted message
 pub fn decrypt_string(sk_string: &String, ciphertext_string: &String, params: &Parameters) -> String {
     // Get the secret key and format as polynomial
     let sk_coeffs: Vec<i64> = sk_string

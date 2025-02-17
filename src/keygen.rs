@@ -2,6 +2,12 @@ use polynomial_ring::Polynomial;
 use ring_lwe::{Parameters, polymul_fast, polyadd, polyinv, gen_ternary_poly, gen_uniform_poly};
 use std::collections::HashMap;
 
+/// Generate a public and secret key pair
+/// # Arguments:
+///	* `params` - ring-LWE parameters
+/// * `seed` - random seed
+/// # Returns:
+///	(public key, secret key)
 pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], Polynomial<i64>) {
 
     //rename parameters
@@ -17,6 +23,12 @@ pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], 
     ([b, a], sk)
 }
 
+/// Generate a public and secret key pair and return as a HashMap
+/// # Arguments:
+///	* `params` - ring-LWE parameters
+/// * `seed` - random seed
+/// # Returns:
+///	HashMap containing public and secret keys
 pub fn keygen_string(params: &Parameters, seed: Option<u64>) -> HashMap<String,String> {
 
     // generate keys using parameters
