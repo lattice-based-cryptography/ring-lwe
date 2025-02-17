@@ -23,6 +23,14 @@ pub fn encrypt(
     (ct0, ct1)
 }
 
+/// Encrypt a string using the public key
+/// # Arguments:
+/// * `pk_string` - public key as a comma-separated string
+/// * `message` - message to encrypt
+/// * `params` - ring-LWE parameters
+/// * `seed` - random seed
+/// # Returns:
+///	encrypted message as a comma-separated string
 pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters, seed: Option<u64>) -> String {
 
     // Get the public key from the string and format as two Polynomials

@@ -10,7 +10,7 @@ use std::env;
 use ring_lwe::Parameters;
 use polynomial_ring::Polynomial;
 
-
+/// Main function to run the keygen, encrypt and decrypt functions
 fn main() {
     let args: Vec<String> = env::args().collect();
 
