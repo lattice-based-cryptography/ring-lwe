@@ -57,7 +57,7 @@ mod tests {
         let mut params = Parameters::default();
         let (q, t, f) = (params.q, params.t, &params.f);
         params.q = q*q;
-        params.omega = omega(params.root, q*q, 2*params.n);
+        params.omega = omega(params.q, 2*params.n);
 
         //create polynomials from ints
         let m0_poly = Polynomial::new(vec![1, 0, 1]);
@@ -93,9 +93,8 @@ mod tests {
     #[test]
     pub fn test_polymul_fast() {
         let p: i64 = 17; // Prime modulus
-        let root: i64 = 3; // Primitive root of unity for the modulus
         let n: usize = 8;  // Length of the NTT (must be a power of 2)
-        let omega = omega(root, p, n); // n-th root of unity
+        let omega = omega(p, n); // n-th root of unity
         let params = Parameters::default();
     
         // Input polynomials (padded to length `n`)
