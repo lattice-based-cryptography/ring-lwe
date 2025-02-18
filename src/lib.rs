@@ -128,13 +128,8 @@ pub fn polymul_fast(
 ) -> Polynomial<i64> {
     let n1 = x.coeffs().len();
     let n2 = y.coeffs().len();
-    // Compute the nearest power of 2 larger than twice the max of input degrees+1
-    let log = std::cmp::max(n1, n2).ilog2();
-    let mut n = 2usize.pow(log);
-    if n < std::cmp::max(n1, n2) {
-        n *= 2;
-    }
-    n *= 2;
+    // Compute the nearest power of 2 at least twice the max of input degrees+1
+    let n = 2*(std::cmp::max(n1, n2)).next_power_of_two();
     // Pad coefficients
     let x_pad = {
         let mut coeffs = x.coeffs().to_vec();
