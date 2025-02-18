@@ -10,7 +10,7 @@ pub struct Parameters {
     pub n: usize,       // Polynomial modulus degree
     pub q: i64,       // Ciphertext modulus
     pub t: i64,       // Plaintext modulus
-    pub omega: i64,   // n-th root of unity
+    pub omega: i64,   // n-th root of unity mod q
     pub f: Polynomial<i64>, // Polynomial modulus (x^n + 1 representation)
     pub sigma: f64,    // Standard deviation for normal distribution
 }
@@ -197,14 +197,12 @@ pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : Po
 	polyadd(x, &polyinv(y, modulus), modulus, &f)
 }
 
-/// Multiply a polynomial by a scalar
+/// Generate a binary polynomial
 /// # Arguments:
-///	* `x` - polynomial to be multiplied
-/// * `a` - scalar to multiply by.
-/// * `modulus` - coefficient modulus.
-///	* `f` - polynomial modulus.
+///	* `size` - number of coefficients
+/// * `seed` - random seed
 /// # Returns:
-///	polynomial in Z_modulus[X]/(f)
+///	polynomial in Z_modulus[X]/(f) with coefficients in {0,1}
 pub fn gen_binary_poly(size : usize, seed: Option<u64>) -> Polynomial<i64> {
 	let between = Uniform::new(0,2);
     let mut rng = match seed {
