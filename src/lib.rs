@@ -193,8 +193,8 @@ pub fn polyinv(x : &Polynomial<i64>, modulus: i64) -> Polynomial<i64> {
 ///	* `f` - polynomial modulus.
 /// # Returns:
 ///	polynomial in Z_modulus[X]/(f)
-pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : Polynomial<i64>) -> Polynomial<i64> {
-	polyadd(x, &polyinv(y, modulus), modulus, &f)
+pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
+	polyadd(x, &polyinv(y, modulus), modulus, f)
 }
 
 /// Generate a binary polynomial
