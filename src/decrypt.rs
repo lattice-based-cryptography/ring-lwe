@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{Parameters, polymul_fast, polyadd, nearest_int};
+use crate::utils::{Parameters, polymul_fast, polyadd, nearest_int};
 
 /// Decrypt a ciphertext using the secret key
 /// # Arguments:
@@ -10,12 +10,11 @@ use ring_lwe::{Parameters, polymul_fast, polyadd, nearest_int};
 ///	decrypted polynomial
 /// # Example:
 /// ```
-/// use ring_lwe::{Parameters, keygen, encrypt, decrypt};
-/// let params = Parameters::default();
-/// let (pk, sk) = keygen(&params, None);
-/// let m = Polynomial::new(vec![1, 0, 1]);
-/// let ct = encrypt(&pk, &m, &params, None);
-/// let decrypted_m = decrypt(&sk, &ct, &params);
+/// let params = ring_lwe::utils::Parameters::default();
+/// let (pk, sk) = ring_lwe::keygen::keygen(&params, None);
+/// let m = polynomial_ring::Polynomial::new(vec![1, 0, 1]);
+/// let ct = ring_lwe::encrypt::encrypt(&pk, &m, &params, None);
+/// let decrypted_m = ring_lwe::decrypt::decrypt(&sk, &ct, &params);
 /// ```
 pub fn decrypt(
     sk: &Polynomial<i64>,    // Secret key
@@ -42,14 +41,13 @@ pub fn decrypt(
 ///	decrypted message
 /// # Example:
 /// ```
-/// use ring_lwe::{Parameters, keygen_string, encrypt_string, decrypt_string};
-/// let params = Parameters::default();
-/// let keys = keygen_string(&params, None);
+/// let params = ring_lwe::utils::Parameters::default();
+/// let keys = ring_lwe::keygen::keygen_string(&params, None);
 /// let sk_string = keys.get("secret").unwrap();
 /// let pk_string = keys.get("public").unwrap();
 /// let message = String::from("hello");
-/// let ciphertext_string = encrypt_string(pk_string, &message, &params, None);
-/// let decrypted_message = decrypt_string(sk_string, &ciphertext_string, &params);
+/// let ciphertext_string = ring_lwe::encrypt::encrypt_string(pk_string, &message, &params, None);
+/// let decrypted_message = ring_lwe::decrypt::decrypt_string(sk_string, &ciphertext_string, &params);
 /// ```
 pub fn decrypt_string(sk_string: &String, ciphertext_string: &String, params: &Parameters) -> String {
     // Get the secret key and format as polynomial

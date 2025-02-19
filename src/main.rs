@@ -1,13 +1,14 @@
 mod keygen;
 mod encrypt;
 mod decrypt;
+mod utils;
 mod test;
 
 use crate::keygen::keygen_string;
 use crate::encrypt::encrypt_string;
 use crate::decrypt::decrypt_string;
+use crate::utils::Parameters;
 use std::env;
-use ring_lwe::Parameters;
 use polynomial_ring::Polynomial;
 
 /// Main function to run the keygen, encrypt and decrypt functions

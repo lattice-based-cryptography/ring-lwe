@@ -3,7 +3,7 @@ mod tests {
     use crate::keygen::{keygen, keygen_string};
     use crate::encrypt::{encrypt, encrypt_string};
     use crate::decrypt::{decrypt, decrypt_string};
-    use ring_lwe::{Parameters, polyadd, polymul, polymul_fast, mod_coeffs, nearest_int, gen_uniform_poly};
+    use crate::utils::{Parameters, polyadd, polymul, polymul_fast, mod_coeffs, nearest_int, gen_uniform_poly};
     use ntt::omega;
     use polynomial_ring::Polynomial;
 
@@ -41,7 +41,7 @@ mod tests {
         let v = encrypt(&pk, &m1_poly, &params, seed);
 
         // Compute sum of encrypted data
-        let ciphertext_sum = [&u.0 + &v.0, &u.1 + &v.1];
+        let ciphertext_sum = [&u[0] + &v[0], &u[1] + &v[1]];
 
         // Decrypt ciphertext sum u+v
         let decrypted_sum = decrypt(&sk, &ciphertext_sum, &params);
@@ -72,16 +72,15 @@ mod tests {
 
         let plaintext_prod = polymul(&m0_poly, &m1_poly, t, &f);
         //compute product of encrypted data, using non-standard multiplication
-        let c0 = polymul(&u.0,&v.0,q*q,&f);
-        let u0v1 = &polymul(&u.0,&v.1,q*q,&f);
-        let u1v0 = &polymul(&u.1,&v.0,q*q,&f);
-        let c1 = polyadd(u0v1,u1v0,q*q,&f);
-        let c2 = polymul(&u.1,&v.1,q*q,&f);
-        let c = (c0, c1, c2);
+        let c0 = polymul(&u[0],&v[0],params.q,&f);
+        let u0v1 = &polymul(&u[0],&v[1],params.q,&f);
+        let u1v0 = &polymul(&u[1],&v[0],params.q,&f);
+        let c1 = polyadd(u0v1,u1v0,params.q,&f);
+        let c2 = polymul(&u[1],&v[1],params.q,&f);
         //compute c0 + c1*s + c2*s*s
-        let c1_sk = &polymul(&c.1,&sk,q*q,&f);
-        let c2_sk_squared = &polymul(&polymul(&c.2,&sk,q*q,&f),&sk,q*q,&f);
-        let ciphertext_prod = polyadd(&polyadd(&c.0,c1_sk,q*q,&f),c2_sk_squared,q*q,&f);
+        let c1_sk = &polymul(&c1,&sk,params.q,&f);
+        let c2_sk_squared = &polymul(&polymul(&c2,&sk,params.q,&f),&sk,params.q,&f);
+        let ciphertext_prod = polyadd(&polyadd(&c0,c1_sk,params.q,&f),c2_sk_squared,params.q,&f);
         //let delta = q / t, divide coeffs by 1 / delta^2
         let delta = q / t;
         let decrypted_prod = mod_coeffs(Polynomial::new(ciphertext_prod.coeffs().iter().map(|&coeff| nearest_int(coeff,delta * delta) ).collect::<Vec<_>>()),t);

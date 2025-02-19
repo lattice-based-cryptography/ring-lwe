@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{Parameters, mod_coeffs, polymul_fast, polyadd, gen_ternary_poly};
+use crate::utils::{Parameters, mod_coeffs, polymul_fast, polyadd, gen_ternary_poly};
 
 /// Encrypt a polynomial using the public key
 /// # Arguments:
@@ -11,18 +11,17 @@ use ring_lwe::{Parameters, mod_coeffs, polymul_fast, polyadd, gen_ternary_poly};
 ///	(ciphertext component 0, ciphertext component 1)
 /// # Example:
 /// ```
-/// use ring_lwe::{Parameters, keygen, encrypt};
-/// let params = Parameters::default();
-/// let (pk, sk) = keygen(&params, None);
-/// let m = Polynomial::new(vec![1, 0, 1]);
-/// let ct = encrypt(&pk, &m, &params, None);
+/// let params = ring_lwe::utils::Parameters::default();
+/// let (pk, sk) = ring_lwe::keygen::keygen(&params, None);
+/// let m = polynomial_ring::Polynomial::new(vec![1, 0, 1]);
+/// let ct = ring_lwe::encrypt::encrypt(&pk, &m, &params, None);
 /// ```
 pub fn encrypt(
     pk: &[Polynomial<i64>; 2],    // Public key (b, a)
     m: &Polynomial<i64>,        // Plaintext polynomial
     params: &Parameters,       //parameters (n,q,t,f)
     seed: Option<u64>            // Seed for random number generator
-) -> (Polynomial<i64>, Polynomial<i64>) {
+) -> [Polynomial<i64>; 2] {
     let (n,q,t,f,omega) = (params.n, params.q, params.t, &params.f, params.omega);
     // Scale the plaintext polynomial. use floor(m*q/t) rather than floor (q/t)*m
     let scaled_m = mod_coeffs(m * q / t, q);
@@ -36,7 +35,7 @@ pub fn encrypt(
     let ct0 = polyadd(&polyadd(&polymul_fast(&pk[0], &u, q, f, omega), &e1, q, f),&scaled_m,q,f);
     let ct1 = polyadd(&polymul_fast(&pk[1], &u, q, f, omega), &e2, q, f);
 
-    (ct0, ct1)
+    [ct0, ct1]
 }
 
 /// Encrypt a string using the public key
@@ -49,12 +48,11 @@ pub fn encrypt(
 ///	encrypted message as a comma-separated string
 /// # Example:
 /// ```
-/// use ring_lwe::{Parameters, keygen_string, encrypt_string};
-/// let params = Parameters::default();
-/// let keys = keygen_string(&params, None);
+/// let params = ring_lwe::utils::Parameters::default();
+/// let keys = ring_lwe::keygen::keygen_string(&params, None);
 /// let pk_string = keys.get("public").unwrap();
 /// let message = String::from("hello");
-/// let ciphertext_string = encrypt_string(pk_string, &message, &params, None);
+/// let ciphertext_string = ring_lwe::encrypt::encrypt_string(pk_string, &message, &params, None);
 /// ```
 pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters, seed: Option<u64>) -> String {
 
@@ -84,8 +82,8 @@ pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters,
     let mut ciphertext_list: Vec<i64> = Vec::new();
     for message_block in message_blocks {
         let ciphertext = encrypt(&pk, &message_block, &params, seed);
-        ciphertext_list.extend(ciphertext.0.coeffs());
-        ciphertext_list.extend(ciphertext.1.coeffs());
+        ciphertext_list.extend(ciphertext[0].coeffs());
+        ciphertext_list.extend(ciphertext[1].coeffs());
     }
 
     // Format the ciphertext list as a comma-separated string
