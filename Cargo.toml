@@ -15,3 +15,26 @@ num-traits = "=0.2.19"
 rand = "0.8.5"
 rand_distr = "0.4.3"
 ntt = "0.1.9"
+
+[dev-dependencies]
+criterion = "0.5.1"
+
+[[bench]]
+name = "benchmark_polymul"
+path = "benches/benchmark_polymul.rs"
+harness = false
+
+[[bench]]
+name = "benchmark_keygen"
+path = "benches/benchmark_keygen.rs"
+harness = false
+
+[[bench]]
+name = "benchmark_encrypt"
+path = "benches/benchmark_encrypt.rs"
+harness = false
+
+[[bench]]
+name = "benchmark_decrypt"
+path = "benches/benchmark_decrypt.rs"
+harness = false
