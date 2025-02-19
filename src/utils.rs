@@ -12,6 +12,7 @@ pub struct Parameters {
     pub t: i64,       // Plaintext modulus
     pub omega: i64,   // n-th root of unity mod q
     pub f: Polynomial<i64>, // Polynomial modulus (x^n + 1 representation)
+    #[allow(dead_code)]
     pub sigma: f64,    // Standard deviation for normal distribution
 }
 
@@ -194,6 +195,7 @@ pub fn polyinv(x : &Polynomial<i64>, modulus: i64) -> Polynomial<i64> {
 ///	* `f` - polynomial modulus.
 /// # Returns:
 ///	polynomial in Z_modulus[X]/(f)
+#[allow(dead_code)]
 pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
 	polyadd(x, &polyinv(y, modulus), modulus, f)
 }
@@ -204,6 +206,7 @@ pub fn polysub(x : &Polynomial<i64>, y : &Polynomial<i64>, modulus : i64, f : &P
 /// * `seed` - random seed
 /// # Returns:
 ///	polynomial in Z_modulus[X]/(f) with coefficients in {0,1}
+#[allow(dead_code)]
 pub fn gen_binary_poly(size : usize, seed: Option<u64>) -> Polynomial<i64> {
 	let between = Uniform::new(0,2);
     let mut rng = match seed {
@@ -263,6 +266,7 @@ pub fn gen_uniform_poly(size: usize, q: i64, seed: Option<u64>) -> Polynomial<i6
 /// * `seed` - random seed
 /// # Returns:
 ///	polynomial with coefficients sampled from a normal distribution
+#[allow(dead_code)]
 pub fn gen_normal_poly(size: usize, sigma: f64, seed: Option<u64>) -> Polynomial<i64> {
 	let normal = Normal::new(0.0 as f64, sigma).unwrap();
     let mut rng = match seed {
