@@ -19,10 +19,10 @@ pub struct Parameters {
 /// Default parameters for ring-LWE
 impl Default for Parameters {
     fn default() -> Self {
-        let n = 512;
+        let n = 1024;
         let q = 12289;
         let t = 2;
-        let omega = 10302;
+        let omega = ntt::omega(q, 2*n);
         let mut poly_vec = vec![0i64;n+1];
         poly_vec[0] = 1;
         poly_vec[n] = 1;

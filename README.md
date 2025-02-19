@@ -41,3 +41,10 @@ Generates the ciphertext.
 
 Decrypts the ciphertext given a secret key, printing the plaintext message.
 
+**Benchmarks**:
+
+| n    | q     | t | keygen    | encrypt   | decrypt   | keygen_string | encrypt_string | decrypt_string |
+|------|-------|---|-----------|-----------|-----------|---------------|----------------|----------------|
+| 256  | 12289 | 2 | 41.565 µs | 70.024 µs | 29.741 µs | 69.703 µs     | 99.181 µs      | 43.751 µs      |
+| 512  | 12289 | 2 | 84.940 µs | 150.17 µs | 65.439 µs | 141.31 µs     | 210.94 µs      | 95.640 µs      |
+| 1024 | 12289 | 2 | 183.50 µs | 326.54 µs | 145.40 µs | 293.69 µs     | 445.11 µs      | 200.24 µs      |
