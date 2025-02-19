@@ -1,5 +1,5 @@
 use polynomial_ring::Polynomial;
-use ring_lwe::{Parameters, polymul_fast, polyadd, polyinv, gen_ternary_poly, gen_uniform_poly};
+use crate::utils::{Parameters, polymul_fast, polyadd, polyinv, gen_ternary_poly, gen_uniform_poly};
 use std::collections::HashMap;
 
 /// Generate a public and secret key pair
@@ -10,9 +10,8 @@ use std::collections::HashMap;
 ///	(public key, secret key)
 /// # Example:
 /// ```
-/// use ring_lwe::{Parameters, keygen};
-/// let params = Parameters::default();
-/// let (pk, sk) = keygen(&params, None);
+/// let params = ring_lwe::utils::Parameters::default();
+/// let (pk, sk) = ring_lwe::keygen::keygen(&params, None);
 /// ```
 pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], Polynomial<i64>) {
 
@@ -37,9 +36,8 @@ pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], 
 ///	HashMap containing public and secret keys
 /// # Example:
 /// ```
-/// use ring_lwe::{Parameters, keygen_string};
-/// let params = Parameters::default();
-/// let keys = keygen_string(&params, None);
+/// let params = ring_lwe::utils::Parameters::default();
+/// let keys = ring_lwe::keygen::keygen_string(&params, None);
 /// let pk_string = keys.get("public").unwrap();
 /// let sk_string = keys.get("secret").unwrap();
 /// ```

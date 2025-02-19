@@ -1,5 +1,5 @@
 use std::time::Instant;
-use ring_lwe::{polymul, polymul_fast, Parameters, gen_uniform_poly};
+use ring_lwe::utils::{polymul, polymul_fast, Parameters, gen_uniform_poly};
 use ntt::omega;
 use polynomial_ring::Polynomial;
 
