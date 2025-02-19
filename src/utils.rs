@@ -86,6 +86,7 @@ pub fn polyrem(x: Polynomial<i64>, f: &Polynomial<i64>) -> Polynomial<i64> {
 ///	* `f` - polynomial modulus.
 /// # Returns:
 ///	polynomial in Z_q[X]/(f)
+#[allow(dead_code)]
 pub fn polymul(x : &Polynomial<i64>, y : &Polynomial<i64>, q : i64, f : &Polynomial<i64>) -> Polynomial<i64> {
 	let mut r = x*y;
     r = polyrem(r,f);
