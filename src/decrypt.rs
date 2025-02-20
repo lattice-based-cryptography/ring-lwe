@@ -1,5 +1,7 @@
-use polynomial_ring::Polynomial;
 use crate::utils::{Parameters, polymul_fast, polyadd, nearest_int};
+use polynomial_ring::Polynomial;
+use base64::{engine::general_purpose, Engine as _};
+use bincode;
 
 /// Decrypt a ciphertext using the secret key
 /// # Arguments:
@@ -49,15 +51,17 @@ pub fn decrypt(
 /// let ciphertext_string = ring_lwe::encrypt::encrypt_string(pk_string, &message, &params, None);
 /// let decrypted_message = ring_lwe::decrypt::decrypt_string(sk_string, &ciphertext_string, &params);
 /// ```
-pub fn decrypt_string(sk_string: &String, ciphertext_string: &String, params: &Parameters) -> String {
-    // Get the secret key and format as polynomial
-    let sk_coeffs: Vec<i64> = sk_string
-        .split(',')
-        .filter_map(|x| x.parse::<i64>().ok())
-        .collect();
+pub fn decrypt_string(sk_base64: &String, ciphertext_string: &String, params: &Parameters) -> String {
+    // Decode the Base64 secret key string
+    let sk_bytes = general_purpose::STANDARD.decode(sk_base64).expect("Failed to decode Base64 secret key");
+
+    // Deserialize the binary data into a vector of i64 coefficients
+    let sk_coeffs: Vec<i64> = bincode::deserialize(&sk_bytes).expect("Failed to deserialize secret key");
+
+    // Reconstruct the secret key polynomial
     let sk = Polynomial::new(sk_coeffs);
 
-    // Get the ciphertext to be decrypted
+    // Parse the ciphertext string into coefficients
     let ciphertext_array: Vec<i64> = ciphertext_string
         .split(',')
         .filter_map(|s| s.parse::<i64>().ok())
