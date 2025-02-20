@@ -40,7 +40,7 @@ pub fn decrypt(
 /// * `ciphertext_string` - ciphertext to decrypt as a base64 encoded string
 /// * `params` - ring-LWE parameters
 /// # Returns:
-///	decrypted message
+///	decrypted plaintext message
 /// # Example:
 /// ```
 /// let params = ring_lwe::utils::Parameters::default();

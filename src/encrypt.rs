@@ -42,7 +42,7 @@ pub fn encrypt(
 
 /// Encrypt a string using the public key
 /// # Arguments:
-/// * `pk_string` - public key as a comma-separated string
+/// * `pk_string` - public key as a base64 encoded string
 /// * `message` - message to encrypt
 /// * `params` - ring-LWE parameters
 /// * `seed` - random seed
