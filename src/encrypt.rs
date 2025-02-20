@@ -1,5 +1,7 @@
-use polynomial_ring::Polynomial;
 use crate::utils::{Parameters, mod_coeffs, polymul_fast, polyadd, gen_ternary_poly};
+use polynomial_ring::Polynomial;
+use base64::{engine::general_purpose, Engine as _};
+use bincode;
 
 /// Encrypt a polynomial using the public key
 /// # Arguments:
@@ -40,12 +42,12 @@ pub fn encrypt(
 
 /// Encrypt a string using the public key
 /// # Arguments:
-/// * `pk_string` - public key as a comma-separated string
+/// * `pk_string` - public key as a base64 encoded string
 /// * `message` - message to encrypt
 /// * `params` - ring-LWE parameters
 /// * `seed` - random seed
 /// # Returns:
-///	encrypted message as a comma-separated string
+///	encrypted message as a base64 encoded string
 /// # Example:
 /// ```
 /// let params = ring_lwe::utils::Parameters::default();
@@ -54,18 +56,20 @@ pub fn encrypt(
 /// let message = String::from("hello");
 /// let ciphertext_string = ring_lwe::encrypt::encrypt_string(pk_string, &message, &params, None);
 /// ```
-pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters, seed: Option<u64>) -> String {
+pub fn encrypt_string(pk_base64: &String, message: &String, params: &Parameters, seed: Option<u64>) -> String {
+    // Decode the Base64 public key string
+    let pk_bytes = general_purpose::STANDARD.decode(pk_base64)
+        .expect("Failed to decode Base64 public key");
+    
+    // Deserialize the binary data into a vector of i64 coefficients
+    let pk_arr: Vec<i64> = bincode::deserialize(&pk_bytes)
+        .expect("Failed to deserialize public key");
 
-    // Get the public key from the string and format as two Polynomials
-    let pk_arr: Vec<i64> = pk_string
-        .split(',')
-        .filter_map(|x| x.parse::<i64>().ok())
-        .collect();
-
+    // Split the public key into two polynomials
     let pk_b = Polynomial::new(pk_arr[..params.n].to_vec());
     let pk_a = Polynomial::new(pk_arr[params.n..].to_vec());
     let pk = [pk_b, pk_a];
-    
+
     // Convert each byte into its 8-bit representation (MSB first)
     let message_bits: Vec<i64> = message
         .bytes()
@@ -74,7 +78,7 @@ pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters,
 
     // Convert bits into a vector of Polynomials
     let message_blocks: Vec<Polynomial<i64>> = message_bits
-        .chunks(params.n)  // Pack bits into polynomials of size `n`
+        .chunks(params.n) // Pack bits into polynomials of size `n`
         .map(|chunk| Polynomial::new(chunk.to_vec()))
         .collect();
 
@@ -86,11 +90,12 @@ pub fn encrypt_string(pk_string: &String, message: &String, params: &Parameters,
         ciphertext_list.extend(ciphertext[1].coeffs());
     }
 
-    // Format the ciphertext list as a comma-separated string
-    let ciphertext_string = ciphertext_list
-        .iter()
-        .map(|x| x.to_string())
-        .collect::<Vec<String>>()
-        .join(",");
-    ciphertext_string
+    // Serialize the ciphertext list to binary
+    let ciphertext_bytes = bincode::serialize(&ciphertext_list)
+        .expect("Failed to serialize ciphertext");
+
+    // Encode the binary ciphertext as Base64
+    let ciphertext_base64 = general_purpose::STANDARD.encode(&ciphertext_bytes);
+
+    ciphertext_base64
 }
