@@ -34,7 +34,7 @@ pub fn keygen(params: &Parameters, seed: Option<u64>) -> ([Polynomial<i64>; 2], 
 ///	* `params` - ring-LWE parameters
 /// * `seed` - random seed
 /// # Returns:
-///	HashMap containing public and secret keys
+///	HashMap containing public and secret keys as base64 encoded strings
 /// # Example:
 /// ```
 /// let params = ring_lwe::utils::Parameters::default();

@@ -47,7 +47,7 @@ pub fn encrypt(
 /// * `params` - ring-LWE parameters
 /// * `seed` - random seed
 /// # Returns:
-///	encrypted message as a comma-separated string
+///	encrypted message as a base64 encoded string
 /// # Example:
 /// ```
 /// let params = ring_lwe::utils::Parameters::default();
@@ -58,10 +58,12 @@ pub fn encrypt(
 /// ```
 pub fn encrypt_string(pk_base64: &String, message: &String, params: &Parameters, seed: Option<u64>) -> String {
     // Decode the Base64 public key string
-    let pk_bytes = general_purpose::STANDARD.decode(pk_base64).expect("Failed to decode Base64 public key");
+    let pk_bytes = general_purpose::STANDARD.decode(pk_base64)
+        .expect("Failed to decode Base64 public key");
     
     // Deserialize the binary data into a vector of i64 coefficients
-    let pk_arr: Vec<i64> = bincode::deserialize(&pk_bytes).expect("Failed to deserialize public key");
+    let pk_arr: Vec<i64> = bincode::deserialize(&pk_bytes)
+        .expect("Failed to deserialize public key");
 
     // Split the public key into two polynomials
     let pk_b = Polynomial::new(pk_arr[..params.n].to_vec());
@@ -88,12 +90,12 @@ pub fn encrypt_string(pk_base64: &String, message: &String, params: &Parameters,
         ciphertext_list.extend(ciphertext[1].coeffs());
     }
 
-    // Format the ciphertext list as a comma-separated string
-    let ciphertext_string = ciphertext_list
-        .iter()
-        .map(|x| x.to_string())
-        .collect::<Vec<String>>()
-        .join(",");
+    // Serialize the ciphertext list to binary
+    let ciphertext_bytes = bincode::serialize(&ciphertext_list)
+        .expect("Failed to serialize ciphertext");
 
-    ciphertext_string
+    // Encode the binary ciphertext as Base64
+    let ciphertext_base64 = general_purpose::STANDARD.encode(&ciphertext_bytes);
+
+    ciphertext_base64
 }

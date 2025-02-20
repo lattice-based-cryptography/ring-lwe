@@ -36,8 +36,8 @@ pub fn decrypt(
 
 /// Decrypt a ciphertext string using the secret key
 /// # Arguments:
-/// * `sk_string` - secret key as a comma-separated string
-/// * `ciphertext_string` - ciphertext to decrypt as a comma-separated string
+/// * `sk_string` - secret key as a base64 encoded string
+/// * `ciphertext_string` - ciphertext to decrypt as a base64 encoded string
 /// * `params` - ring-LWE parameters
 /// # Returns:
 ///	decrypted message
@@ -51,21 +51,25 @@ pub fn decrypt(
 /// let ciphertext_string = ring_lwe::encrypt::encrypt_string(pk_string, &message, &params, None);
 /// let decrypted_message = ring_lwe::decrypt::decrypt_string(sk_string, &ciphertext_string, &params);
 /// ```
-pub fn decrypt_string(sk_base64: &String, ciphertext_string: &String, params: &Parameters) -> String {
+pub fn decrypt_string(sk_base64: &String, ciphertext_base64: &String, params: &Parameters) -> String {
     // Decode the Base64 secret key string
-    let sk_bytes = general_purpose::STANDARD.decode(sk_base64).expect("Failed to decode Base64 secret key");
+    let sk_bytes = general_purpose::STANDARD.decode(sk_base64)
+        .expect("Failed to decode Base64 secret key");
 
     // Deserialize the binary data into a vector of i64 coefficients
-    let sk_coeffs: Vec<i64> = bincode::deserialize(&sk_bytes).expect("Failed to deserialize secret key");
+    let sk_coeffs: Vec<i64> = bincode::deserialize(&sk_bytes)
+        .expect("Failed to deserialize secret key");
 
     // Reconstruct the secret key polynomial
     let sk = Polynomial::new(sk_coeffs);
 
-    // Parse the ciphertext string into coefficients
-    let ciphertext_array: Vec<i64> = ciphertext_string
-        .split(',')
-        .filter_map(|s| s.parse::<i64>().ok())
-        .collect();
+    // Decode the Base64 ciphertext string
+    let ciphertext_bytes = general_purpose::STANDARD.decode(ciphertext_base64)
+        .expect("Failed to decode Base64 ciphertext");
+
+    // Deserialize the binary ciphertext into a vector of i64 coefficients
+    let ciphertext_array: Vec<i64> = bincode::deserialize(&ciphertext_bytes)
+        .expect("Failed to deserialize ciphertext");
 
     let num_blocks = ciphertext_array.len() / (2 * params.n);
     let mut decrypted_bits: Vec<i64> = Vec::new();
