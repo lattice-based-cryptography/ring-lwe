@@ -1,7 +1,6 @@
-use crate::utils::{Parameters, polymul_fast, polyadd, polyinv, gen_ternary_poly, gen_uniform_poly};
+use crate::utils::{Parameters, polymul_fast, polyadd, polyinv, gen_ternary_poly, gen_uniform_poly,compress};
 use polynomial_ring::Polynomial;
 use std::collections::HashMap;
-use base64::{engine::general_purpose, Engine as _};
 
 /// Generate a public and secret key pair
 /// # Arguments:
@@ -50,17 +49,9 @@ pub fn keygen_string(params: &Parameters, seed: Option<u64>) -> HashMap<String, 
     pk_coeffs.extend(pk[0].coeffs());
     pk_coeffs.extend(pk[1].coeffs());
 
-    // Serialize the coefficients as binary data
-    let pk_bytes = bincode::serialize(&pk_coeffs).expect("Failed to serialize public key");
-    let sk_bytes = bincode::serialize(&sk.coeffs()).expect("Failed to serialize secret key");
-
-    // Encode the binary data to Base64
-    let pk_base64 = general_purpose::STANDARD.encode(&pk_bytes);
-    let sk_base64 = general_purpose::STANDARD.encode(&sk_bytes);
-
     // Store public/secret keys in a HashMap
     let mut keys: HashMap<String, String> = HashMap::new();
-    keys.insert(String::from("secret"), sk_base64);
-    keys.insert(String::from("public"), pk_base64);
+    keys.insert(String::from("secret"), compress(&sk.coeffs().to_vec()));
+    keys.insert(String::from("public"), compress(&pk_coeffs));
     keys
 }

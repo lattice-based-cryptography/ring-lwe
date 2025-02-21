@@ -1,7 +1,5 @@
-use crate::utils::{Parameters, mod_coeffs, polymul_fast, polyadd, gen_ternary_poly};
+use crate::utils::{Parameters, mod_coeffs, polymul_fast, polyadd, gen_ternary_poly,compress,decompress};
 use polynomial_ring::Polynomial;
-use base64::{engine::general_purpose, Engine as _};
-use bincode;
 
 /// Encrypt a polynomial using the public key
 /// # Arguments:
@@ -58,12 +56,7 @@ pub fn encrypt(
 /// ```
 pub fn encrypt_string(pk_base64: &String, message: &String, params: &Parameters, seed: Option<u64>) -> String {
     // Decode the Base64 public key string
-    let pk_bytes = general_purpose::STANDARD.decode(pk_base64)
-        .expect("Failed to decode Base64 public key");
-    
-    // Deserialize the binary data into a vector of i64 coefficients
-    let pk_arr: Vec<i64> = bincode::deserialize(&pk_bytes)
-        .expect("Failed to deserialize public key");
+    let pk_arr: Vec<i64> = decompress(pk_base64);
 
     // Split the public key into two polynomials
     let pk_b = Polynomial::new(pk_arr[..params.n].to_vec());
@@ -90,12 +83,6 @@ pub fn encrypt_string(pk_base64: &String, message: &String, params: &Parameters,
         ciphertext_list.extend(ciphertext[1].coeffs());
     }
 
-    // Serialize the ciphertext list to binary
-    let ciphertext_bytes = bincode::serialize(&ciphertext_list)
-        .expect("Failed to serialize ciphertext");
-
-    // Encode the binary ciphertext as Base64
-    let ciphertext_base64 = general_purpose::STANDARD.encode(&ciphertext_bytes);
-
-    ciphertext_base64
+    // Serialize the ciphertext list to binary and encode as Base64
+    compress(&ciphertext_list)
 }
