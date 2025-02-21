@@ -1,7 +1,5 @@
-use crate::utils::{Parameters, polymul_fast, polyadd, nearest_int};
+use crate::utils::{Parameters, polymul_fast, polyadd, nearest_int, decompress};
 use polynomial_ring::Polynomial;
-use base64::{engine::general_purpose, Engine as _};
-use bincode;
 
 /// Decrypt a ciphertext using the secret key
 /// # Arguments:
@@ -52,24 +50,11 @@ pub fn decrypt(
 /// let decrypted_message = ring_lwe::decrypt::decrypt_string(sk_string, &ciphertext_string, &params);
 /// ```
 pub fn decrypt_string(sk_base64: &String, ciphertext_base64: &String, params: &Parameters) -> String {
-    // Decode the Base64 secret key string
-    let sk_bytes = general_purpose::STANDARD.decode(sk_base64)
-        .expect("Failed to decode Base64 secret key");
+    // Decode the base64 secret key string and deserialize into a vector of i64 coefficients
+    let sk = Polynomial::new(decompress(sk_base64));
 
-    // Deserialize the binary data into a vector of i64 coefficients
-    let sk_coeffs: Vec<i64> = bincode::deserialize(&sk_bytes)
-        .expect("Failed to deserialize secret key");
-
-    // Reconstruct the secret key polynomial
-    let sk = Polynomial::new(sk_coeffs);
-
-    // Decode the Base64 ciphertext string
-    let ciphertext_bytes = general_purpose::STANDARD.decode(ciphertext_base64)
-        .expect("Failed to decode Base64 ciphertext");
-
-    // Deserialize the binary ciphertext into a vector of i64 coefficients
-    let ciphertext_array: Vec<i64> = bincode::deserialize(&ciphertext_bytes)
-        .expect("Failed to deserialize ciphertext");
+    // Decode the Base64 ciphertext string and deserialize into vector of i64 coefficients
+    let ciphertext_array: Vec<i64> = decompress(ciphertext_base64);
 
     let num_blocks = ciphertext_array.len() / (2 * params.n);
     let mut decrypted_bits: Vec<i64> = Vec::new();

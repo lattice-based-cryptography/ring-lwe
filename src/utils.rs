@@ -3,6 +3,8 @@ use rand_distr::{Uniform, Normal, Distribution};
 use ntt::polymul_ntt;
 use rand::SeedableRng;
 use rand::rngs::StdRng;
+use base64::{engine::general_purpose, Engine as _};
+use bincode;
 
 /// Ring-LWE parameters
 #[derive(Debug)]
@@ -293,4 +295,24 @@ pub fn nearest_int(a: i64, b: i64) -> i64 {
 	}else {
 		-((-a + b / 2) / b)
 	}
+}
+
+/// seralize and encode a vector of i64 to a base64 encoded string
+/// # Arguments
+/// * `data` - vector of i64
+/// # Returns
+/// * `encoded` - base64 encoded string
+pub fn compress(data: &Vec<i64>) -> String {
+    let serialized_data = bincode::serialize(data).expect("Failed to serialize data");
+    general_purpose::STANDARD.encode(&serialized_data)
+}
+
+/// decode and deserialize a base64 encoded string to a vector of i64
+/// # Arguments
+/// * `base64_str` - base64 encoded string
+/// # Returns
+/// * `decoded_data` - vector of i64
+pub fn decompress(base64_str: &str) -> Vec<i64> {
+    let decoded_bytes = general_purpose::STANDARD.decode(base64_str).expect("Failed to decode base64 string");
+    bincode::deserialize(&decoded_bytes).expect("Failed to deserialize data")
 }
