@@ -99,7 +99,6 @@ fn main() {
             let keypair = keygen_string(&params, None);
             println!("Public key: {} bytes", keypair.get("public").unwrap().len());
             println!("Secret key: {} bytes", keypair.get("secret").unwrap().len());
-            println!("{:?}", keypair);
 
             if save_keys {
                 use std::fs::File;
@@ -117,6 +116,9 @@ fn main() {
                     .expect("Failed to write secret key");
 
                 println!("Keys saved to public.key and secret.key");
+            }
+            else {
+                println!("{:?}", keypair);
             }
         }
 
