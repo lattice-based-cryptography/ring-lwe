@@ -31,6 +31,10 @@ enum Commands {
         q: Option<i64>,
         #[arg(long)]
         t: Option<i64>,
+
+        /// Optional flag to save keys to files
+        #[arg(long)]
+        save_keys: bool,
     },
 
     /// Encrypt a message
@@ -82,10 +86,30 @@ fn main() {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Keygen { n, q, t } => {
+        Commands::Keygen { n, q, t, save_keys } => {
             let params = build_params(n, q, t);
             let keypair = keygen_string(&params, None);
+            println!("Public key: {} bytes", keypair.get("public").unwrap().len());
+            println!("Secret key: {} bytes", keypair.get("secret").unwrap().len());
             println!("{:?}", keypair);
+
+            if save_keys {
+                use std::fs::File;
+                use std::io::Write;
+
+                let public_key = keypair.get("public").expect("No public key found");
+                let secret_key = keypair.get("secret").expect("No secret key found");
+
+                let mut pk_file = File::create("public.key").expect("Failed to create public.key");
+                pk_file.write_all(public_key.as_bytes())
+                    .expect("Failed to write public key");
+
+                let mut sk_file = File::create("secret.key").expect("Failed to create secret.key");
+                sk_file.write_all(secret_key.as_bytes())
+                    .expect("Failed to write secret key");
+
+                println!("Keys saved to public.key and secret.key");
+            }
         }
 
         Commands::Encrypt {
