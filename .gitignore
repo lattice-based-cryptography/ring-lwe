@@ -25,3 +25,4 @@ Cargo.lock
 # Ignore the key files if they are generated
 public.key
 secret.key
+ciphertext.txt

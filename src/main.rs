@@ -50,6 +50,10 @@ enum Commands {
         /// Message to encrypt
         message: String,
 
+        /// Optional file to save ciphertext
+        #[arg(long)]
+        ciphertext_file: Option<String>,
+
         /// Optional: parameters n, q, t
         #[arg(long)]
         n: Option<usize>,
@@ -70,7 +74,11 @@ enum Commands {
         secret_file: Option<String>,
 
         /// Ciphertext to decrypt
-        ciphertext: String,
+        ciphertext: Option<String>,
+
+        /// Ciphertext file
+        #[arg(long, group = "ciphertext_source")]
+        ciphertext_file: Option<String>,
 
         /// Optional: parameters n, q, t
         #[arg(long)]
@@ -116,6 +124,7 @@ fn main() {
             pubkey,
             pubkey_file,
             message,
+            ciphertext_file,
             n,
             q,
             t,
@@ -135,13 +144,24 @@ fn main() {
             };
 
             let ciphertext = encrypt_string(&pk_string, &message, &params, None);
-            println!("{}", ciphertext);
+            
+            if let Some(file) = ciphertext_file {
+                use std::fs::File;
+                use std::io::Write;
+                let mut f = File::create(&file).expect("Failed to create ciphertext file");
+                f.write_all(ciphertext.as_bytes())
+                    .expect("Failed to write ciphertext");
+                println!("Ciphertext saved to {}", file);
+            } else {
+                println!("{}", ciphertext);
+            }
         }
 
         Commands::Decrypt {
             secret,
             secret_file,
             ciphertext,
+            ciphertext_file,
             n,
             q,
             t,
@@ -160,7 +180,19 @@ fn main() {
                 panic!("Must supply either --secret or --secret-file");
             };
 
-            let message = decrypt_string(&sk_string, &ciphertext, &params);
+            // Load ciphertext from inline arg or file
+            let ct_string = if let Some(file) = ciphertext_file {
+                fs::read_to_string(file)
+                    .expect("Failed to read ciphertext file")
+                    .trim()
+                    .to_string()
+            } else if let Some(ct) = ciphertext {
+                ct.clone()
+            } else {
+                panic!("Must supply either ciphertext or --ciphertext-file");
+            };
+
+            let message = decrypt_string(&sk_string, &ct_string, &params);
             println!("{}", message);
         }
     }
