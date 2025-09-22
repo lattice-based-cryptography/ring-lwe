@@ -8,63 +8,153 @@ use crate::keygen::keygen_string;
 use crate::encrypt::encrypt_string;
 use crate::decrypt::decrypt_string;
 use crate::utils::Parameters;
-use std::env;
 use polynomial_ring::Polynomial;
+use clap::{Parser, Subcommand};
+use std::fs;
 
-/// Main function to run the keygen, encrypt and decrypt functions
+/// A simple Ring-LWE encryption tool
+#[derive(Parser)]
+#[command(author, version, about)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    /// Generate a keypair
+    Keygen {
+        /// Optional: parameters n, q, t
+        #[arg(long)]
+        n: Option<usize>,
+        #[arg(long)]
+        q: Option<i64>,
+        #[arg(long)]
+        t: Option<i64>,
+    },
+
+    /// Encrypt a message
+    Encrypt {
+        /// Public key (base64 string)
+        #[arg(long, group = "pubkey_source")]
+        pubkey: Option<String>,
+
+        /// Public key file
+        #[arg(long, group = "pubkey_source")]
+        pubkey_file: Option<String>,
+
+        /// Message to encrypt
+        message: String,
+
+        /// Optional: parameters n, q, t
+        #[arg(long)]
+        n: Option<usize>,
+        #[arg(long)]
+        q: Option<i64>,
+        #[arg(long)]
+        t: Option<i64>,
+    },
+
+    /// Decrypt a ciphertext
+    Decrypt {
+        /// Secret key (base64 string)
+        #[arg(long, group = "seckey_source")]
+        secret: Option<String>,
+
+        /// Secret key file
+        #[arg(long, group = "seckey_source")]
+        secret_file: Option<String>,
+
+        /// Ciphertext to decrypt
+        ciphertext: String,
+
+        /// Optional: parameters n, q, t
+        #[arg(long)]
+        n: Option<usize>,
+        #[arg(long)]
+        q: Option<i64>,
+        #[arg(long)]
+        t: Option<i64>,
+    },
+}
+
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let cli = Cli::parse();
 
-    // Initialize struct with default values
+    match cli.command {
+        Commands::Keygen { n, q, t } => {
+            let params = build_params(n, q, t);
+            let keypair = keygen_string(&params, None);
+            println!("{:?}", keypair);
+        }
+
+        Commands::Encrypt {
+            pubkey,
+            pubkey_file,
+            message,
+            n,
+            q,
+            t,
+        } => {
+            let params = build_params(n, q, t);
+
+            // Load pubkey from inline arg or file
+            let pk_string = if let Some(pk) = pubkey {
+                pk
+            } else if let Some(file) = pubkey_file {
+                fs::read_to_string(file)
+                    .expect("Failed to read public key file")
+                    .trim()
+                    .to_string()
+            } else {
+                panic!("Must supply either --pubkey or --pubkey-file");
+            };
+
+            let ciphertext = encrypt_string(&pk_string, &message, &params, None);
+            println!("{}", ciphertext);
+        }
+
+        Commands::Decrypt {
+            secret,
+            secret_file,
+            ciphertext,
+            n,
+            q,
+            t,
+        } => {
+            let params = build_params(n, q, t);
+
+            // Load secret key from inline arg or file
+            let sk_string = if let Some(sk) = secret {
+                sk
+            } else if let Some(file) = secret_file {
+                fs::read_to_string(file)
+                    .expect("Failed to read secret key file")
+                    .trim()
+                    .to_string()
+            } else {
+                panic!("Must supply either --secret or --secret-file");
+            };
+
+            let message = decrypt_string(&sk_string, &ciphertext, &params);
+            println!("{}", message);
+        }
+    }
+}
+
+/// Helper to build parameters with default fallback
+fn build_params(n: Option<usize>, q: Option<i64>, t: Option<i64>) -> Parameters {
     let mut params = Parameters::default();
-    // Check for --params flag and get the updated values directly
-    if let Some(pos) = args.iter().position(|x| x == "--params") {
-        if args.len() > pos + 3 {
-            params.n = args.get(pos + 1).and_then(|s| s.parse().ok()).unwrap_or(params.n);
-            params.q = args.get(pos + 2).and_then(|s| s.parse().ok()).unwrap_or(params.q);
-            params.t = args.get(pos + 3).and_then(|s| s.parse().ok()).unwrap_or(params.t);
-            let mut poly_vec = vec![0i64;params.n+1];
-            poly_vec[0] = 1;
-            poly_vec[params.n] = 1;
-            params.f = Polynomial::new(poly_vec);
-        }
+
+    if let (Some(n), Some(q), Some(t)) = (n, q, t) {
+        params.n = n;
+        params.q = q;
+        params.t = t;
+        let mut poly_vec = vec![0i64; params.n + 1];
+        poly_vec[0] = 1;
+        poly_vec[params.n] = 1;
+        params.f = Polynomial::new(poly_vec);
     }
 
-    let method = if args.len() > 1 {&args[1]} else {""};
-
-    //generate public and secret keys (parameters optional)
-    if method == "keygen"{
-        if args.len() != 2 && args.len() != 6 {
-            println!("Usage: cargo run -- keygen");
-            return;
-        }
-        let keypair = keygen_string(&params,None);
-        println!("{:?}",keypair);
-    }
-
-    //encrypt given public key and message as args (parameters optional)
-    if method == "encrypt" {
-        if args.len() != 4 && args.len() != 8 {
-            println!("Usage: cargo run -- encrypt <public_key> <message_string>");
-            return;
-        }
-        let pk_string = &args[2];
-        let message = &args[3];
-        let ciphertext_string = encrypt_string(pk_string,message,&params,None);
-        println!("{}", ciphertext_string);
-    }
-
-    //decrypt a messsage (parameters optional)
-    if method == "decrypt" {
-        if args.len() != 4 && args.len() != 8 {
-            println!("Usage: cargo run -- decrypt <secret_key> <ciphertext>");
-            return;
-        }
-        let sk_string = &args[2];
-        let ciphertext_string = &args[3];
-        let decrypted_message = decrypt_string(sk_string, ciphertext_string,&params);
-        // Print the decrypted message
-        println!("{}", decrypted_message);
-    }
-
+    params
 }
