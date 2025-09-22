@@ -6,11 +6,17 @@
 
 Implmentation of lattice-based encryption method ring-LWE in pure Rust.
 
-**Description**: This provides the basic PKE (keygen, encryption, and decryption) operations for the ring learning-with-errors scheme.
+## Description
 
-**Disclaimer**: This is not secure. It is not written in constant-time nor resistant to other side-channel attacks. This is intended for educational use and not for real-world applications.
+This provides the basic PKE (keygen, encryption, and decryption) operations for the ring learning-with-errors scheme.
 
-**Usage**: In the `src` directory,
+## Disclaimer
+
+This is not secure. It is not written in constant-time nor resistant to other side-channel attacks. This is intended for educational use and not for real-world applications.
+
+## Build and test
+
+ In the `src` directory,
 
 `cargo build`
 
@@ -21,9 +27,11 @@ To build the binary.
 - Performs keygen/encrypt/decrypt for a test message.
 - Checks homomorphic addition and multiplcation hold for small values.
 
-_Note_: Parameters optional via 
+## Keygen
 
-- `--params <n> <q> <t>` for ring-LWE
+_Note_: Parameters optional.
+
+- `cargo run -- keygen --n 512 --q 12289 --t 2`
 
 where `n` is the polynomial degree, `q` is the ciphertext modulus, `t` is the plaintext modulus.
 
@@ -31,15 +39,31 @@ If ommitted, the default parameters will be used.
 
 `cargo run -- keygen`
 
-This will generate a public/secret keypair. 
+This will generate a public/secret keypair printed to the console. 
+
+To save the key files to `public.key` and `secret.key`, use the `--save-keys` flag:
+
+`cargo run -- keygen --n 512 --q 12289 --t 2 --save-keys`
+
+## Encryption
+
+To encrypt a message using the public key using command line arguments:
 
 `cargo run -- encrypt <public_key> <message>`
 
-Generates the ciphertext.
+To encrypt a message using a public key file:
+
+`cargo run -- encrypt --pubkey-file public.key "Hello, world!" --n 512 --q 1024 --t 3`
+
+## Decryption
+
+To decrypt a message using the secret key using command line arguments:
 
 `cargo run -- decrypt <secret_key> <ciphertext>`
 
-Decrypts the ciphertext given a secret key, printing the plaintext message.
+To decrypt a message using the secret key file:
+
+`cargo run -- decrypt --secret-file secret.key "<CIPHERTEXT>" --n 512 --q 12289 --t 2`
 
 **Benchmarks**:
 
