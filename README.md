@@ -43,7 +43,7 @@ This will generate a public/secret keypair printed to the console.
 
 To save the key files to `public.key` and `secret.key`, use the `--save-keys` flag:
 
-`cargo run -- keygen --n 512 --q 12289 --t 2 --save-keys`
+`cargo run -- keygen --save-keys`
 
 ## Encryption
 
@@ -53,17 +53,25 @@ To encrypt a message using the public key using command line arguments:
 
 To encrypt a message using a public key file:
 
-`cargo run -- encrypt --pubkey-file public.key "Hello, world!" --n 512 --q 1024 --t 3`
+`cargo run -- encrypt --pubkey-file public.key "Hello, world!"`
+
+To encrypt a message and save the ciphertext to file:
+
+`cargo run -- encrypt --pubkey-file public.key 'Hello, world!' --ciphertext-file ciphertext.txt`
 
 ## Decryption
 
-To decrypt a message using the secret key using command line arguments:
+To decrypt an encrypted message using the secret key using command line arguments:
 
 `cargo run -- decrypt <secret_key> <ciphertext>`
 
-To decrypt a message using the secret key file:
+To decrypt an encrypted message using the secret key file:
 
-`cargo run -- decrypt --secret-file secret.key "<CIPHERTEXT>" --n 512 --q 12289 --t 2`
+`cargo run -- decrypt --secret-file secret.key <ciphertext> --n 512 --q 12289 --t 2`
+
+To decrypt an encrypted message from a file `ciphertext.txt`:
+
+`cargo run -- decrypt --secret-file secret.key --ciphertext-file ciphertext.txt`
 
 **Benchmarks**:
 
