@@ -195,7 +195,7 @@ fn main() {
             };
 
             let message = decrypt_string(&sk_string, &ct_string, &params);
-            println!("{}", message);
+            println!("message: {:?}", message);
         }
     }
 }
